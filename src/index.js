@@ -99,7 +99,9 @@ function LeagueGroup(props) {
                 {options}
             </optgroup>  
         );
-    }        
+    } else {
+        return null;
+    }
 }
 
 class App extends React.Component {
