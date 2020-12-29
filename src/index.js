@@ -116,56 +116,62 @@ function LeagueGroup(props) {
 class Standings extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {rankings: props.rankings, selected: null, value: "Select a player"};
 
-        this.state = {results: null};
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    componentDidMount() {
-        let urlLeague = this.props.scoring === 'c' ? '/leagues-classic/' : '/leagues-h2h/';
-        let url = ProxyUrl + ApiBaseUrl + urlLeague + this.props.id + '/standings/';
-    
-        fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            this.setState({results: data.standings.results});            
-        });
+    handleChange(event) {
+        const index = event.target.selectedIndex;
+        const optionElement = event.target[index];
+        const playerId = optionElement.getAttribute('value');
+        const player = this.state.rankings.find(el => el.entry === +playerId);
+
+        this.setState({value: event.target.value, selected: player});
     }
 
     render() {
-        if (this.state.results) {
-            let players = this.state.results.map(pla => (
-                <li key={pla.rank}>{pla.rank}. {pla.entry_name}, {pla.player_name} {pla.total} ({pla.event_total})</li>
-            ));
-
-            return (
-                <ol className="rankings">
-                    {players}
-                </ol>
-            );
-        } else {
-            return null;
-        }        
-    }    
+        let players = this.state.rankings.map(pla => (
+            <option key={pla.rank} value={pla.entry}>
+                {pla.rank}. {pla.entry_name}, {pla.player_name} {pla.total} ({pla.event_total})
+            </option>
+        ));
+    
+        return (
+            <select value={this.state.value} onChange={this.handleChange}>
+                <option value="Select a player" disabled hidden>Select a player</option>
+                {players}
+            </select>
+        ); 
+    }  
 }
 
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {"playerName": '', "playerInfo": '', "leagues": null, "selectedLeague": null};
+        this.state = {playerName: null, playerInfo: null, leagues: null, selectedLeague: null, rankings: null};
     }
 
-    handlePlayerInfo(data) {
-        //console.log(data);        
+    handlePlayerInfo(data) {      
         let playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}, ${data.player_region_name}`;
         this.setState({playerName: playerName, playerInfo: data, leagues: data.leagues});        
     }
 
     handlePlayerChange() {
-        this.setState({"playerName": '', "playerInfo": '', "leagues": null});
+        this.setState({playerName: null, playerInfo: null, leagues: null});
     }
 
     handleLeagueChange(league) {
-        this.setState({"selectedLeague": league});
+        this.setState({selectedLeague: league});
+
+        let urlLeague = league.scoring === 'c' ? '/leagues-classic/' : '/leagues-h2h/';
+        let url = ProxyUrl + ApiBaseUrl + urlLeague + league.id + '/standings/';
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            this.setState({rankings: data.standings.results});            
+        });
     }
 
     render() {
@@ -174,7 +180,8 @@ class App extends React.Component {
                 {!this.state.playerName && <EntryForm afterSubmit={(pi) => this.handlePlayerInfo(pi)} />}
                 {this.state.playerName && <PlayerName value={this.state.playerName} onChange={() => this.handlePlayerChange()} />}
                 {this.state.leagues && <LeagueForm leagues={this.state.leagues} onChange={(d) => this.handleLeagueChange(d)} />}  
-                {this.state.selectedLeague && <Standings id={this.state.selectedLeague.id} scoring={this.state.selectedLeague.scoring} />}              
+                {this.state.rankings && <Standings rankings={this.state.rankings} />}
+                {this.state.rankings && <Standings rankings={this.state.rankings} />}              
             </div>
         );
     }
