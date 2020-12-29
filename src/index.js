@@ -48,7 +48,9 @@ class EntryForm extends React.Component {
                 </label>
                 <input type="submit" value="Check" />
             </form>
-            <div>{this.state.playerInfo}</div>
+            <div className="entry-info" >
+                {this.state.playerInfo}
+            </div>
         </div>
       );
     }

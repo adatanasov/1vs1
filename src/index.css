@@ -45,7 +45,10 @@ body {
     flex-direction: row;
   }
   
-  .game-info {
-    margin-left: 20px;
+  .entry-info {
+    font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    margin-top: 10px;
   }
   
