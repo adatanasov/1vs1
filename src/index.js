@@ -19,7 +19,7 @@ class EntryForm extends React.Component {
     }
 
     handleSubmit(event) {
-        let url = ProxyUrl + ApiBaseUrl + '/entry/' + this.state.value + '/';
+        const url = `${ProxyUrl}${ApiBaseUrl}/entry/${this.state.value}/`;
 
         fetch(url)
         .then(response => response.json())
@@ -84,7 +84,7 @@ class LeagueForm extends React.Component {
         return (
             <form>
                 <label>
-                    Leagues:<br/>
+                    {/* Leagues:<br/> */}
                     <select value={this.state.value} onChange={this.handleChange}>
                         <option value="Select a League" disabled hidden>Select a League</option>
                         <LeagueGroup leagues={classicLeagues} title="Classic Leagues" />       
@@ -116,22 +116,18 @@ function LeagueGroup(props) {
 class PlayerSelector extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {rankings: props.rankings, selected: null, value: "Select a player"};
+        this.state = {value: "Select a player"};
 
         this.handleChange = this.handleChange.bind(this);
     }
 
     handleChange(event) {
-        const index = event.target.selectedIndex;
-        const optionElement = event.target[index];
-        const playerId = optionElement.getAttribute('value');
-        const player = this.state.rankings.find(el => el.entry === +playerId);
-
-        this.setState({value: event.target.value, selected: player});
+        this.setState({value: +event.target.value});
+        this.props.onChange(+event.target.value);
     }
 
     render() {
-        let players = this.state.rankings.map(pla => (
+        let players = this.props.rankings.map(pla => (
             <option key={pla.rank} value={pla.entry}>
                 {pla.rank}. {pla.entry_name}, {pla.player_name} {pla.total} ({pla.event_total})
             </option>
@@ -144,6 +140,86 @@ class PlayerSelector extends React.Component {
             </select>
         ); 
     }  
+}
+
+function PlayerPoints(props) {
+    return (
+        <div className="points-wrapper">
+            <span className="points">
+                {props.points}
+            </span>
+        </div>
+    );
+}
+
+function PlayerPicks(props) {
+    let picks = props.picks.map(pick => (
+        <li key={pick.id} className="player-pick">
+            <span className="player-pick-name">{pick.name}</span>
+        </li>
+    ));
+
+    return (
+        <div className="player-picks-wrapper">
+            <ul className="player-picks">
+                {picks}
+            </ul>
+        </div>
+    );
+}
+
+class PlayerInfo extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            rankings: props.rankings, 
+            playerId: null, 
+            event: props.event, 
+            picks: null, 
+            footballPlayers: null,
+            playersToRender: null
+        };
+
+        const url = `${ProxyUrl}${ApiBaseUrl}/bootstrap-static/`;
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            this.setState({footballPlayers: data.elements});
+        });
+    }
+
+    handlePlayerChange(playerId) {
+        this.setState({playerId: playerId});
+
+        const url = `${ProxyUrl}${ApiBaseUrl}/entry/${playerId}/event/${this.state.event}/picks/`;
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            this.setState({picks: data.picks});
+
+            if (this.state.footballPlayers) {
+                let playersToRender = data.picks.map(pick => {
+                    let actual = this.state.footballPlayers.find(pl => pl.id === pick.element);
+                    return {id: pick.element, name: actual.web_name};
+                });
+
+                this.setState({playersToRender: playersToRender});
+            }
+        });
+    }
+
+    render() {
+        return (
+            <div className="player-info">
+                {this.state.rankings && 
+                    <PlayerSelector rankings={this.state.rankings} onChange={(pi) => this.handlePlayerChange(pi)} />} 
+                <PlayerPoints points={0} />    
+                {this.state.playersToRender && <PlayerPicks picks={this.state.playersToRender} />}                           
+            </div>
+        );
+    }
 }
 
 class App extends React.Component {
@@ -164,8 +240,8 @@ class App extends React.Component {
     handleLeagueChange(league) {
         this.setState({selectedLeague: league});
 
-        let urlLeague = league.scoring === 'c' ? '/leagues-classic/' : '/leagues-h2h/';
-        let url = ProxyUrl + ApiBaseUrl + urlLeague + league.id + '/standings/';
+        const urlLeague = league.scoring === 'c' ? '/leagues-classic/' : '/leagues-h2h/';
+        const url = `${ProxyUrl}${ApiBaseUrl}${urlLeague}${league.id}/standings/`;
 
         this.setState({rankings: null});
 
@@ -181,9 +257,11 @@ class App extends React.Component {
             <div className="app">
                 {!this.state.playerName && <EntryForm afterSubmit={(pi) => this.handlePlayerInfo(pi)} />}
                 {this.state.playerName && <PlayerName value={this.state.playerName} onChange={() => this.handlePlayerChange()} />}
-                {this.state.leagues && <LeagueForm leagues={this.state.leagues} onChange={(d) => this.handleLeagueChange(d)} />}  
-                {this.state.rankings && <PlayerSelector rankings={this.state.rankings} />}
-                {this.state.rankings && <PlayerSelector rankings={this.state.rankings} />}              
+                {this.state.leagues && <LeagueForm leagues={this.state.leagues} onChange={(d) => this.handleLeagueChange(d)} />} 
+                <div className="players-info">
+                    {this.state.rankings && <PlayerInfo rankings={this.state.rankings} event={this.state.currentEvent} />}
+                    {this.state.rankings && <PlayerInfo rankings={this.state.rankings} event={this.state.currentEvent} />}   
+                </div>
             </div>
         );
     }

@@ -1,54 +1,15 @@
 body {
-    font: 14px "Century Gothic", Futura, sans-serif;
+    font: 14px "PremierSans-Bold", "Helvetica Neue", "Helvetica", "Arial", "sans-seriff";
+    margin: 0px;
+    padding: 0px;
+  }
+
+  .app {    
     margin: 20px;
   }
   
-  ol, ul {
-    padding-left: 30px;
-  }
-  
-  .board-row:after {
-    clear: both;
-    content: "";
-    display: table;
-  }
-  
-  .status {
-    margin-bottom: 10px;
-  }
-  
-  .square {
-    background: #fff;
-    border: 1px solid #999;
-    float: left;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 34px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-    width: 34px;
-  }
-  
-  .square:focus {
-    outline: none;
-  }
-  
-  .kbd-navigation .square:focus {
-    background: #ddd;
-  }
-  
-  .game {
-    display: flex;
-    flex-direction: row;
-  }
-
-  /* //////////// NEW ///////////// */
-  
   .entry-info {
-    font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+    font-family: "Lato", "Helvetica Neue", "Helvetica", "sans-serif";
     font-size: 1.7rem;
     font-weight: 400;
     margin-top: 10px;
@@ -56,5 +17,64 @@ body {
 
   .rankings {
     list-style: none;
+  }
+
+  .players-info {
+    display: flex;
+    flex-direction: row;
+    height: 600px;
+  }
+
+  .player-info {
+    border: 1px solid black;
+    margin: 20px 20px 0px 0px;
+
+    background: linear-gradient(
+      to bottom,
+      #01BA5C,
+      #01BA5C 50%,
+      #00AE55 50%,
+      #00AE55
+    );
+    background-size: 100% 50px;
+  }
+
+  .points-wrapper {
+    background-color: white;
+    color: #FF2882;
+    width: 90px;
+    height: 50px;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid black;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .points {
+    font-size: 3rem;
+    font-weight: normal;
+  }
+
+  .player-picks {    
+    list-style: none;
+  }
+
+  .player-picks-wrapper {
+    height: 470px;
+  }
+
+  .player-pick {
+    margin: 10px;
+  }
+
+  .player-pick-name {
+    background-color: #00763A;
+    color: white;
+    font-size: 1.1rem;
+    padding: 5px 10px;
   }
   
