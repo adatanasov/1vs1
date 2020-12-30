@@ -42,7 +42,7 @@ class EntryForm extends React.Component {
                     value={this.state.value} 
                     onChange={this.handleChange} />        
             </label>
-            <input type="submit" value="Check" />
+            <input type="submit" value="Check" className="submit-entry" />
         </form>
       );
     }
@@ -52,7 +52,7 @@ function PlayerName(props) {
     return (
         <div className="entry-info" >
             {props.value}
-            <button onClick={props.onChange}>Change</button>
+            <button onClick={props.onChange} className="change-entry">Change</button>
         </div>
     );    
 }
@@ -82,9 +82,9 @@ class LeagueForm extends React.Component {
         const globalLeagues = this.state.leagues.classic.filter(le => le.league_type === 's');
 
         return (
-            <form>
+            <form className="league-form">
                 <label>
-                    {/* Leagues:<br/> */}
+                    League:<br/>
                     <select value={this.state.value} onChange={this.handleChange}>
                         <option value="Select a League" disabled hidden>Select a League</option>
                         <LeagueGroup leagues={classicLeagues} title="Classic Leagues" />       
@@ -129,7 +129,9 @@ class PlayerSelector extends React.Component {
     render() {
         let players = this.props.rankings.map(pla => (
             <option key={pla.rank} value={pla.entry}>
-                {pla.rank}. {pla.entry_name}, {pla.player_name} {pla.total} ({pla.event_total})
+                {pla.event_total ? 
+                    `${pla.rank}. ${pla.entry_name} ${pla.total} (${pla.event_total})` :
+                    `${pla.rank}. ${pla.entry_name} ${pla.total} (${pla.matches_won}-${pla.matches_drawn}-${pla.matches_lost})`}
             </option>
         ));
     
@@ -229,7 +231,7 @@ class App extends React.Component {
     }
 
     handlePlayerInfo(data) {      
-        let playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}, ${data.player_region_name}`;
+        let playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}`;
         this.setState({playerName: playerName, playerInfo: data, currentEvent: data.current_event, leagues: data.leagues});        
     }
 

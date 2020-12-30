@@ -7,12 +7,24 @@ body {
   .app {    
     margin: 20px;
   }
+
+  .submit-entry {
+    margin-left: 15px;
+  }
+
+  .league-form {
+    margin-top: 10px;
+  }
   
   .entry-info {
     font-family: "Lato", "Helvetica Neue", "Helvetica", "sans-serif";
-    font-size: 1.7rem;
+    font-size: 1.3rem;
     font-weight: 400;
     margin-top: 10px;
+  }
+
+  .change-entry {
+    margin-left: 15px;
   }
 
   .rankings {
@@ -22,7 +34,7 @@ body {
   .players-info {
     display: flex;
     flex-direction: row;
-    height: 600px;
+    height: 545px;
   }
 
   .player-info {
@@ -74,7 +86,7 @@ body {
   .player-pick-name {
     background-color: #00763A;
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 5px 10px;
   }
   
