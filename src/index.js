@@ -167,10 +167,12 @@ class App extends React.Component {
         let urlLeague = league.scoring === 'c' ? '/leagues-classic/' : '/leagues-h2h/';
         let url = ProxyUrl + ApiBaseUrl + urlLeague + league.id + '/standings/';
 
+        this.setState({rankings: null});
+
         fetch(url)
         .then(response => response.json())
         .then(data => {
-            this.setState({rankings: data.standings.results});            
+            this.setState({rankings: data.standings.results});
         });
     }
 
