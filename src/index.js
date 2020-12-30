@@ -158,6 +158,7 @@ function PlayerPicks(props) {
     let picks = props.picks.map(pick => (
         <li key={pick.id} className="player-pick">
             <span className="player-pick-name">{pick.name}</span>
+            <span className="player-pick-points">{pick.points}</span>
         </li>
     ));
 
@@ -179,15 +180,21 @@ class PlayerInfo extends React.Component {
             event: props.event, 
             picks: null, 
             footballPlayers: null,
-            playersToRender: null
+            playersToRender: null,
+            liveStats: null,
+            totalPoints: 0
         };
 
-        const url = `${ProxyUrl}${ApiBaseUrl}/bootstrap-static/`;
-
-        fetch(url)
+        fetch(`${ProxyUrl}${ApiBaseUrl}/bootstrap-static/`)
         .then(response => response.json())
         .then(data => {
             this.setState({footballPlayers: data.elements});
+        });
+
+        fetch(`${ProxyUrl}${ApiBaseUrl}/event/${this.state.event}/live/`)
+        .then(response => response.json())
+        .then(data => {
+            this.setState({liveStats: data.elements});
         });
     }
 
@@ -201,13 +208,25 @@ class PlayerInfo extends React.Component {
         .then(data => {
             this.setState({picks: data.picks});
 
-            if (this.state.footballPlayers) {
+            if (this.state.footballPlayers && this.state.liveStats) {
                 let playersToRender = data.picks.map(pick => {
-                    let actual = this.state.footballPlayers.find(pl => pl.id === pick.element);
-                    return {id: pick.element, name: actual.web_name};
+                    let actualPlayer = this.state.footballPlayers.find(pl => pl.id === pick.element);
+                    let actualStat = this.state.liveStats.find(pl => pl.id === pick.element);
+
+                    return {
+                        id: pick.element, 
+                        name: actualPlayer.web_name, 
+                        points: actualStat.stats.total_points
+                    };
                 });
 
                 this.setState({playersToRender: playersToRender});
+            }
+
+            if (this.state.playersToRender) {
+                let totalPoints = this.state.playersToRender.reduce((acc, curr) => acc + curr.points, 0);
+
+                this.setState({totalPoints: totalPoints});
             }
         });
     }
@@ -217,8 +236,9 @@ class PlayerInfo extends React.Component {
             <div className="player-info">
                 {this.state.rankings && 
                     <PlayerSelector rankings={this.state.rankings} onChange={(pi) => this.handlePlayerChange(pi)} />} 
-                <PlayerPoints points={0} />    
-                {this.state.playersToRender && <PlayerPicks picks={this.state.playersToRender} />}                           
+                <PlayerPoints points={this.state.totalPoints} />    
+                {this.state.playersToRender && 
+                    <PlayerPicks picks={this.state.playersToRender} />}                           
             </div>
         );
     }
