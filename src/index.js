@@ -113,7 +113,7 @@ function LeagueGroup(props) {
     }
 }
 
-class Standings extends React.Component {
+class PlayerSelector extends React.Component {
     constructor(props) {
         super(props);
         this.state = {rankings: props.rankings, selected: null, value: "Select a player"};
@@ -149,12 +149,12 @@ class Standings extends React.Component {
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {playerName: null, playerInfo: null, leagues: null, selectedLeague: null, rankings: null};
+        this.state = {playerName: null, playerInfo: null, currentEvent: null , leagues: null, selectedLeague: null, rankings: null};
     }
 
     handlePlayerInfo(data) {      
         let playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}, ${data.player_region_name}`;
-        this.setState({playerName: playerName, playerInfo: data, leagues: data.leagues});        
+        this.setState({playerName: playerName, playerInfo: data, currentEvent: data.current_event, leagues: data.leagues});        
     }
 
     handlePlayerChange() {
@@ -182,8 +182,8 @@ class App extends React.Component {
                 {!this.state.playerName && <EntryForm afterSubmit={(pi) => this.handlePlayerInfo(pi)} />}
                 {this.state.playerName && <PlayerName value={this.state.playerName} onChange={() => this.handlePlayerChange()} />}
                 {this.state.leagues && <LeagueForm leagues={this.state.leagues} onChange={(d) => this.handleLeagueChange(d)} />}  
-                {this.state.rankings && <Standings rankings={this.state.rankings} />}
-                {this.state.rankings && <Standings rankings={this.state.rankings} />}              
+                {this.state.rankings && <PlayerSelector rankings={this.state.rankings} />}
+                {this.state.rankings && <PlayerSelector rankings={this.state.rankings} />}              
             </div>
         );
     }
