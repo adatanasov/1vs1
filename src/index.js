@@ -52,7 +52,7 @@ function PlayerName(props) {
     return (
         <div className="entry-info" >
             {props.value}
-            <button onClick={props.onChange} className="change-entry">Change</button>
+            <button onClick={props.onChange} className="change-entry"></button>
         </div>
     );    
 }
@@ -84,8 +84,8 @@ class LeagueForm extends React.Component {
         return (
             <form className="league-form">
                 <label>
-                    League:<br/>
-                    <select value={this.state.value} onChange={this.handleChange}>
+                    {/* League:<br/> */}
+                    <select value={this.state.value} onChange={this.handleChange} className="league-select">
                         <option value="Select a League" disabled hidden>Select a League</option>
                         <LeagueGroup leagues={classicLeagues} title="Classic Leagues" />       
                         <LeagueGroup leagues={h2hLeagues} title="Head-to-Head Leagues" />       
