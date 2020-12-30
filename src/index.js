@@ -130,13 +130,13 @@ class PlayerSelector extends React.Component {
         let players = this.props.rankings.map(pla => (
             <option key={pla.rank} value={pla.entry}>
                 {pla.event_total ? 
-                    `${pla.rank}. ${pla.entry_name} ${pla.total} (${pla.event_total})` :
-                    `${pla.rank}. ${pla.entry_name} ${pla.total} (${pla.matches_won}-${pla.matches_drawn}-${pla.matches_lost})`}
+                    `${pla.entry_name} ${pla.total} (${pla.event_total})` :
+                    `${pla.entry_name} ${pla.total} (${pla.matches_won}-${pla.matches_drawn}-${pla.matches_lost})`}
             </option>
         ));
     
         return (
-            <select value={this.state.value} onChange={this.handleChange}>
+            <select value={this.state.value} onChange={this.handleChange} className="player-select">
                 <option value="Select a player" disabled hidden>Select a player</option>
                 {players}
             </select>

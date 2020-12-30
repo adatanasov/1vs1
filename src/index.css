@@ -40,6 +40,7 @@ body {
   .player-info {
     border: 1px solid black;
     margin: 20px 20px 0px 0px;
+    width: 150px;
 
     background: linear-gradient(
       to bottom,
@@ -49,6 +50,10 @@ body {
       #00AE55
     );
     background-size: 100% 50px;
+  }
+
+  .player-select {
+    width: 150px;
   }
 
   .points-wrapper {
@@ -73,6 +78,7 @@ body {
 
   .player-picks {    
     list-style: none;
+    padding: 0px;
   }
 
   .player-picks-wrapper {
