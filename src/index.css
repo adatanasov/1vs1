@@ -49,6 +49,7 @@ body {
     display: flex;
     flex-direction: row;
     height: 545px;
+    max-width: 424px;
   }
 
   .player-info {
