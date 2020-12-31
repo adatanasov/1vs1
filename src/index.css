@@ -10,7 +10,15 @@ body {
 }
 
 .submit-entry {
-  margin-left: 15px;
+  margin-top: 15px;
+  color: #fff;
+  background-color: #359900;
+  padding: 3px 25px;
+  font-family: Roboto,sans-serif;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid transparent;
 }
 
 .entry-info {

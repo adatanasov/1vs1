@@ -35,13 +35,18 @@ class EntryForm extends React.Component {
       return (
         <form onSubmit={this.handleSubmit}>
             <label>
-                Player ID:<br/>
+                On the website go to Points and copy this number from the URL: <i>https://fantasy.premierleague.com/entry/</i><b>2458458</b><i>/event/16</i>
+                <br/>
+                <br/>
+                Player ID:                    
+                <br/>
                 <input 
                     type="text" 
                     placeholder="e.g. 2458458"
                     value={this.state.value} 
                     onChange={this.handleChange} />        
             </label>
+            <br/>
             <input type="submit" value="Check" className="submit-entry" />
         </form>
       );
