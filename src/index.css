@@ -34,7 +34,7 @@ body {
     background-color: white;
     background-image: url('close-icon.png');
     display: inline-block;
-    vertical-align: text-bottom;
+    vertical-align: top;
   }
 
   .league-select {
