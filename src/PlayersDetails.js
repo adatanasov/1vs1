@@ -40,6 +40,12 @@ class PlayersDetails extends Component {
         .then(data => {
             this.setState({fixtures: data});
         }); 
+
+        this.refresh = this.refresh.bind(this);
+    }
+
+    refresh(event) {
+        this.handleGameWeekChange(this.state.selectedEvent);
     }
 
     handleGameWeekChange(gameweek) {           
@@ -199,6 +205,9 @@ class PlayersDetails extends Component {
                             totalPoints={this.state.player2totalPoints}
                             playersToRender={this.state.player2playersToRender}
                             handlePlayerChange={(pi) => this.handlePlayerChange('player2', pi)} />}
+                </div>
+                <div className="refresh-wrapper">
+                    <button onClick={this.refresh} className="refresh">Refresh</button>
                 </div>
             </div>
         );

@@ -9,7 +9,7 @@ body {
   max-width: 424px;
 }
 
-.submit-entry {
+.submit-entry,.refresh {
   margin-top: 15px;
   color: #fff;
   background-color: #359900;
@@ -19,6 +19,12 @@ body {
   font-size: 16px;
   cursor: pointer;
   border: 1px solid transparent;
+}
+
+.refresh-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .entry-info {
@@ -40,10 +46,6 @@ body {
   display: inline-block;
   vertical-align: top;
 }
-
-/* .league-form {
-  margin-top: 10px;
-} */
 
 .league-select {
   width: 100%;
