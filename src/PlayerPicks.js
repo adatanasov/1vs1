@@ -7,7 +7,7 @@ function PlayerPicks(props) {
             <span className="player-pick-name">{pick.name}</span>
             {pick.isCaptain ? <span className="cap-icon">{captainSvg}</span> : null}
             {pick.isViceCaptain ? <span className="cap-icon">{viceCaptainSvg}</span> : null}
-            <span className="player-pick-points">{pick.points}</span>
+            <span className="player-pick-points">{pick.isPlaying ? pick.points : '-'}</span>
         </li>
     ));
 

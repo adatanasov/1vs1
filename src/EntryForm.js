@@ -17,9 +17,24 @@ class EntryForm extends Component {
         const url = `${this.props.baseUrl}/entry/${this.state.value}/`;
 
         fetch(url)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            return Promise.reject(response);
+          }
+          return response.json();
+        })
         .then(data => {
-            this.props.afterSubmit(data);
+          data.isSuccess = true;
+          this.props.afterSubmit(data);
+        })
+        .catch(error => {
+          error.json().then((body) => {
+            this.props.afterSubmit({
+              isSuccess: false,
+              error: body
+            });
+          });
+          
         });
 
         localStorage.setItem("PlayerId", this.state.value);

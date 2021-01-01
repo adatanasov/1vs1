@@ -22,7 +22,14 @@ class App extends Component {
     }
 
     handlePlayerInfo(data) {      
-        let playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}`;
+        let playerName;
+
+        if (data.isSuccess) {
+            playerName = `${data.name}, ${data.player_first_name} ${data.player_last_name}`
+        } else {
+            playerName = data.error;
+        }
+
         this.setState({
             playerName: playerName, 
             playerInfo: data, 
