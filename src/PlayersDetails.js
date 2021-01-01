@@ -81,23 +81,33 @@ class PlayersDetails extends Component {
             if (this.state.footballPlayers && this.state.liveStats && this.state.fixtures) {
                 let playingTeams = this.state.fixtures.map(f => f.team_h).concat(this.state.fixtures.map(f => f.team_a));
                 let transferCosts = data.entry_history.event_transfers_cost;
+                let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
+                let currentMatchesBonus = this.getCurrentMatchesBonus(this.state.fixtures);
 
                 let playersToRender = data.picks.map(pick => {
                     let actualPlayer = this.state.footballPlayers.find(pl => pl.id === pick.element);
                     let actualStat = this.state.liveStats.find(pl => pl.id === pick.element);
-
+                    
                     let decoratedPick = {
                         id: pick.element, 
                         teamId: actualPlayer.team,
                         name: actualPlayer.web_name, 
                         points: actualStat.stats.total_points,
                         minutes: actualStat.stats.minutes,
+                        bonus: actualStat.stats.bonus,
                         isPlaying: playingTeams.includes(actualPlayer.team),
                         isCaptain: pick.is_captain,
                         isViceCaptain: pick.is_vice_captain,
                         multiplier: pick.multiplier,
                         position: pick.position
                     };
+
+                    console.log(currentMatchesBonus);
+                    let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
+                    if (decoratedPick.bonus === 0 && bonus) {
+                        decoratedPick.bonus = bonus.points;
+                        decoratedPick.points += bonus.points;
+                    }
 
                     return decoratedPick;
                 });
@@ -119,11 +129,45 @@ class PlayersDetails extends Component {
 
                 this.setState({[`${name}playersToRender`]: playersToRender});
 
-                let totalPoints = playersToRender.slice(0, 11).reduce((acc, curr) => acc + curr.points, 0) - transferCosts;
+                let playersToTake = isBenchBoostActive ? 15 : 11;
+                let totalPoints = playersToRender.slice(0, playersToTake).reduce((acc, curr) => acc + curr.points, 0) - transferCosts;
 
                 this.setState({[`${name}totalPoints`]: totalPoints});
             }
         });
+    }
+
+    getCurrentMatchesBonus(fixtures) {
+        let matchesWithoutBonus = fixtures.filter(fi => fi.started && 
+            fi.stats.find(st => st.identifier === 'bonus').h.length === 0 && 
+            fi.stats.find(st => st.identifier === 'bonus').a.length === 0);
+        let bonuses = matchesWithoutBonus.map(fi => {
+            let allBonuses = [...fi.stats.find(st => st.identifier === 'bps').h, ...fi.stats.find(st => st.identifier === 'bps').a];
+            allBonuses.sort(function (a, b) {
+                return b.value - a.value;
+            });
+            // Take first, second and all equal to the thirds
+            allBonuses = allBonuses.slice(0, 2).concat(allBonuses.filter(bo => bo.value === allBonuses[2].value));
+
+            let biggest = 3;
+            allBonuses[0].points = biggest;
+            for (let i = 1; i < allBonuses.length; i++) {
+                let current = allBonuses[i].value === allBonuses[i-1].value ? biggest : --biggest;
+                allBonuses[i].points = current;
+            }
+
+            return allBonuses;
+        });     
+        
+        let concatArrays = (...bonuses) => {
+            const res = bonuses.reduce((acc, val) => {
+               return acc.concat(...val);
+            }, []);
+            return res;
+        };
+        let result = concatArrays(bonuses);
+        
+        return result;
     }
 
     getPickPoints(pick, canCaptainPlay) {
