@@ -12,7 +12,7 @@ body {
 .submit-entry,.refresh {
   margin-top: 15px;
   color: #fff;
-  background-color: #359900;
+  background-color: #37003C;
   padding: 3px 25px;
   font-family: Roboto,sans-serif;
   border-radius: 4px;
@@ -25,10 +25,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.refresh {
-  background-color: #37003C;
 }
 
 .entry-info {
