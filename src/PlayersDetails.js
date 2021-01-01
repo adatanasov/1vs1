@@ -102,7 +102,6 @@ class PlayersDetails extends Component {
                         position: pick.position
                     };
 
-                    console.log(currentMatchesBonus);
                     let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
                     if (decoratedPick.bonus === 0 && bonus) {
                         decoratedPick.bonus = bonus.points;
