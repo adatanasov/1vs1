@@ -16,9 +16,9 @@ class PlayerSelector extends Component {
     render() {
         let players = this.props.rankings.map(pla => (
             <option key={pla.rank_sort} value={pla.entry}>
-                {pla.event_total ? 
-                    `${pla.entry_name} ${pla.total} (${pla.event_total})` :
-                    `${pla.entry_name} ${pla.total} (${pla.matches_won}-${pla.matches_drawn}-${pla.matches_lost})`}
+                {pla.points_for ? 
+                    `${pla.entry_name} ${pla.total} (${pla.matches_won}-${pla.matches_drawn}-${pla.matches_lost})` :
+                    `${pla.entry_name} ${pla.total} (${pla.event_total})`}
             </option>
         ));
     
