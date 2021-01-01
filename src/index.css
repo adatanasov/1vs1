@@ -27,6 +27,10 @@ body {
   align-items: center;
 }
 
+.refresh {
+  background-color: #37003C;
+}
+
 .entry-info {
   font-family: "Lato", "Helvetica Neue", "Helvetica", "sans-serif";
   font-size: 1.3rem;
