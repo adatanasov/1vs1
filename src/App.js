@@ -11,7 +11,22 @@ var ApiBaseUrl = 'https://fantasy.premierleague.com/api';
 class App extends Component {
     constructor(props) {
         super(props);
+
+        const queryParams = new URLSearchParams(window.location.search);
+        let playerId = parseInt(queryParams.get('id'));
+
+        if (playerId) {
+            localStorage.setItem("PlayerId", playerId);
+        } else {
+            playerId = localStorage.getItem("PlayerId");  
+            if (playerId) {
+                queryParams.set('id', playerId); 
+                window.location.search = queryParams.toString();
+            }     
+        }
+
         this.state = {
+            playerId: playerId,
             playerName: null, 
             playerInfo: null, 
             currentEvent: null, 
@@ -19,6 +34,37 @@ class App extends Component {
             selectedLeague: null, 
             rankings: null
         };
+    }
+
+    componentDidMount() {
+        if (this.state.playerId) {
+            this.handlePlayerId(this.state.playerId);
+        }
+        
+    }
+
+    handlePlayerId(id) {
+        localStorage.setItem("PlayerId", id);
+
+        fetch(`${ProxyUrl}${ApiBaseUrl}/entry/${id}/`)
+        .then(response => {
+            if (!response.ok) {
+                return Promise.reject(response);
+            }
+            return response.json();
+        })
+        .then(data => {
+            data.isSuccess = true;
+            this.handlePlayerInfo(data);
+        })
+        .catch(error => {
+            error.json().then((body) => {
+                this.handlePlayerInfo({
+                    isSuccess: false,
+                    error: body
+                });
+            });          
+        });
     }
 
     handlePlayerInfo(data) {      
@@ -31,14 +77,16 @@ class App extends Component {
         }
 
         this.setState({
+            playerId: data.id,
             playerName: playerName, 
             playerInfo: data, 
             currentEvent: data.current_event,
-            leagues: data.leagues});        
+            leagues: data.leagues
+        });        
     }
 
-    handlePlayerChange() {
-        this.setState({playerName: null, playerInfo: null, leagues: null});
+    handlePlayerReset() {
+        this.setState({playerId: null, playerName: null, playerInfo: null, leagues: null});
     }
 
     handleLeagueChange(league) {
@@ -59,19 +107,16 @@ class App extends Component {
     render() {
         return (
             <div className="app">
-                {!this.state.playerName && 
-                    <EntryForm 
-                        baseUrl={`${ProxyUrl}${ApiBaseUrl}`} 
-                        afterSubmit={(pi) => this.handlePlayerInfo(pi)} />}
-                {this.state.playerName && 
+                {!this.state.playerId && <EntryForm />}
+                {this.state.playerId && this.state.playerName && 
                     <PlayerName 
                         value={this.state.playerName} 
-                        onChange={() => this.handlePlayerChange()} />}
-                {this.state.leagues && 
+                        onChange={() => this.handlePlayerReset()} />}
+                {this.state.playerId && this.state.leagues && 
                     <LeagueSelect 
                         leagues={this.state.leagues} 
                         onChange={(d) => this.handleLeagueChange(d)} />}
-                {this.state.currentEvent && 
+                {this.state.playerId && this.state.currentEvent && 
                     this.state.rankings && 
                     <PlayersDetails 
                         baseUrl={`${ProxyUrl}${ApiBaseUrl}`} 

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class EntryForm extends Component {
     constructor(props) {
       super(props);
-      this.state = {value: localStorage.getItem("PlayerId")};
+      this.state = {value: ''};
 
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
@@ -14,30 +14,10 @@ class EntryForm extends Component {
     }
 
     handleSubmit(event) {
-        const url = `${this.props.baseUrl}/entry/${this.state.value}/`;
+        const queryParams = new URLSearchParams(window.location.search);
+        queryParams.set('id', this.state.value);
+        window.location.search = queryParams.toString();
 
-        fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            return Promise.reject(response);
-          }
-          return response.json();
-        })
-        .then(data => {
-          data.isSuccess = true;
-          this.props.afterSubmit(data);
-        })
-        .catch(error => {
-          error.json().then((body) => {
-            this.props.afterSubmit({
-              isSuccess: false,
-              error: body
-            });
-          });
-          
-        });
-
-        localStorage.setItem("PlayerId", this.state.value);
         event.preventDefault();
     }
   
@@ -45,7 +25,8 @@ class EntryForm extends Component {
       return (
         <form onSubmit={this.handleSubmit}>
             <label>
-                On the website go to Points and copy this number from the URL: <i>https://fantasy.premierleague.com/entry/</i><b>2458458</b><i>/event/16</i>
+                On the website go to Points and copy this number from the URL: 
+                <i>https://fantasy.premierleague.com/entry/</i><b>2458458</b><i>/event/16</i>
                 <br/>
                 <br/>
                 Player ID:                    
