@@ -47,22 +47,18 @@ class PlayersDetails extends Component {
         .then(response => response.json())
         .then(data => {
             this.setState({liveStats: data.elements});
-            console.log('updated liveStats');
 
             fetch(`${this.props.baseUrl}/fixtures/?event=${gameweek}`)
             .then(response => response.json())
             .then(data => {
                 this.setState({fixtures: data});
-                console.log('updated fixtures'); 
 
                 if (this.state.player1) {
                     this.fillPlayerPicksForEvent('player1', this.state.player1, gameweek);
-                    console.log('updated player1');
                 }
         
                 if (this.state.player2) {
                     this.fillPlayerPicksForEvent('player2', this.state.player2, gameweek);
-                    console.log('updated player2');
                 }
             }); 
         }); 
