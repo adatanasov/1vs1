@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Loader from "react-loader-spinner";
 
 import EntryForm from './EntryForm';
 import PlayerName from './PlayerName';
@@ -26,6 +27,7 @@ class App extends Component {
         }
 
         this.state = {
+            isLoading: false,
             playerId: playerId,
             playerName: null, 
             playerInfo: null, 
@@ -45,9 +47,11 @@ class App extends Component {
 
     handlePlayerId(id) {
         localStorage.setItem("PlayerId", id);
+        this.showLoader();
 
         fetch(`${ProxyUrl}${ApiBaseUrl}/entry/${id}/`)
         .then(response => {
+            this.hideLoader();
             if (!response.ok) {
                 return Promise.reject(response);
             }
@@ -96,17 +100,34 @@ class App extends Component {
         const url = `${ProxyUrl}${ApiBaseUrl}${urlLeague}${league.id}/standings/`;
 
         this.setState({rankings: null});
+        this.showLoader();
 
         fetch(url)
         .then(response => response.json())
         .then(data => {
             this.setState({rankings: data.standings.results});
+            this.hideLoader();
         });
+    }
+
+    showLoader() {
+        this.setState({isLoading: true});
+    }
+
+    hideLoader() {
+        this.setState({isLoading: false});
     }
 
     render() {
         return (
             <div className="app">
+                <Loader
+                    type="Oval"
+                    color="#37003C"
+                    height={80}
+                    width={80}
+                    visible={this.state.isLoading}
+                    className="loader" />
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
@@ -121,7 +142,9 @@ class App extends Component {
                     <PlayersDetails 
                         baseUrl={`${ProxyUrl}${ApiBaseUrl}`} 
                         currentEvent={this.state.currentEvent} 
-                        rankings={this.state.rankings} />} 
+                        rankings={this.state.rankings}
+                        showLoader={() => this.showLoader()}
+                        hideLoader={() => this.hideLoader()} />} 
             </div>
         );
     }

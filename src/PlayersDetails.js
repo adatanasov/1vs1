@@ -7,6 +7,7 @@ class PlayersDetails extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: false,
             currentEvent: props.currentEvent,
             selectedEvent: props.currentEvent,
             rankings: props.rankings,
@@ -26,6 +27,16 @@ class PlayersDetails extends Component {
         this.refresh = this.refresh.bind(this);
     }
 
+    showLoader() {
+        this.setState({isLoading: true});
+        this.props.showLoader();
+    }
+
+    hideLoader() {
+        this.setState({isLoading: false});
+        this.props.hideLoader();
+    }
+
     componentDidMount() {
         fetch(`${this.props.baseUrl}/bootstrap-static/`)
         .then(response => response.json())
@@ -40,7 +51,8 @@ class PlayersDetails extends Component {
         this.handleGameWeekChange(this.state.selectedEvent);
     }
 
-    handleGameWeekChange(gameweek) {           
+    handleGameWeekChange(gameweek) {
+        this.showLoader();
         this.setState({selectedEvent: gameweek});
 
         fetch(`${this.props.baseUrl}/event/${gameweek}/live/`)
@@ -62,6 +74,8 @@ class PlayersDetails extends Component {
                 }
             }); 
         }); 
+
+        this.hideLoader();
     }
 
     handlePlayerChange(name, playerId) {
@@ -71,6 +85,8 @@ class PlayersDetails extends Component {
     }
 
     fillPlayerPicksForEvent(name, playerId, event) {
+        this.showLoader();
+
         fetch(`${this.props.baseUrl}/entry/${playerId}/event/${event}/picks/`)
         .then(response => response.json())
         .then(data => {
@@ -135,6 +151,8 @@ class PlayersDetails extends Component {
 
                 this.setState({[`${name}totalPoints`]: totalPoints});
             }
+
+            this.hideLoader();
         });
     }
 
@@ -203,7 +221,10 @@ class PlayersDetails extends Component {
                             handlePlayerChange={(pi) => this.handlePlayerChange('player2', pi)} />}
                 </div>
                 <div className="refresh-wrapper">
-                    <button onClick={this.refresh} className="refresh">Refresh</button>
+                    <button 
+                        onClick={this.refresh} 
+                        className="refresh"
+                        disabled={this.state.isLoading}>Refresh</button>
                 </div>
             </div>
         );
