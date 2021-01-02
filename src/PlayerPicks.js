@@ -4,7 +4,7 @@ function PlayerPicks(props) {
 
     let picks = props.picks.map(pick => (
         <li key={pick.id} className="player-pick">
-            <span className="player-pick-name">{pick.name}</span>
+            <span className={`player-pick-name ${pick.isReserve ? 'reserve' : ''}`}>{pick.name}</span>
             {pick.isCaptain ? <span className="cap-icon">{captainSvg}</span> : null}
             {pick.isViceCaptain ? <span className="cap-icon">{viceCaptainSvg}</span> : null}
             <span className="player-pick-points">{pick.isPlaying ? pick.points : '-'}</span>

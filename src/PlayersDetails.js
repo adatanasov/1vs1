@@ -121,12 +121,16 @@ class PlayersDetails extends Component {
                         canCaptainPlay = captain.minutes > 0;
                     }
                 }
+                
+                let playersToTake = isBenchBoostActive ? 15 : 11;
+                for (let i = playersToTake; i < playersToRender.length; i++) {
+                    playersToRender[i].isReserve = true;                    
+                }
 
                 playersToRender.map(pl => pl.points = this.getPickPoints(pl, canCaptainPlay));
 
                 this.setState({[`${name}playersToRender`]: playersToRender});
 
-                let playersToTake = isBenchBoostActive ? 15 : 11;
                 let totalPoints = playersToRender.slice(0, playersToTake).reduce((acc, curr) => acc + curr.points, 0) - transferCosts;
 
                 this.setState({[`${name}totalPoints`]: totalPoints});

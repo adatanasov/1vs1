@@ -147,6 +147,11 @@ body {
   border-radius: 5px;
 }  
 
+.reserve {
+  background-color: #E9E9E5;
+  color: #2F2F2F;
+}
+
 .cap-icon {
   width: 20px;
   height: 20px;
