@@ -23,25 +23,17 @@ class PlayersDetails extends Component {
             player2playersToRender: null
         };
 
-        fetch(`${props.baseUrl}/bootstrap-static/`)
+        this.refresh = this.refresh.bind(this);
+    }
+
+    componentDidMount() {
+        fetch(`${this.props.baseUrl}/bootstrap-static/`)
         .then(response => response.json())
         .then(data => {
             this.setState({footballPlayers: data.elements});
-        });        
-
-        fetch(`${this.props.baseUrl}/event/${props.currentEvent}/live/`)
-        .then(response => response.json())
-        .then(data => {
-            this.setState({liveStats: data.elements});
-        }); 
-
-        fetch(`${this.props.baseUrl}/fixtures/?event=${props.currentEvent}`)
-        .then(response => response.json())
-        .then(data => {
-            this.setState({fixtures: data});
-        }); 
-
-        this.refresh = this.refresh.bind(this);
+            
+            this.handleGameWeekChange(this.state.currentEvent);
+        });
     }
 
     refresh(event) {
@@ -55,21 +47,25 @@ class PlayersDetails extends Component {
         .then(response => response.json())
         .then(data => {
             this.setState({liveStats: data.elements});
-        });  
+            console.log('updated liveStats');
 
-        fetch(`${this.props.baseUrl}/fixtures/?event=${gameweek}`)
-        .then(response => response.json())
-        .then(data => {
-            this.setState({fixtures: data});
+            fetch(`${this.props.baseUrl}/fixtures/?event=${gameweek}`)
+            .then(response => response.json())
+            .then(data => {
+                this.setState({fixtures: data});
+                console.log('updated fixtures'); 
+
+                if (this.state.player1) {
+                    this.fillPlayerPicksForEvent('player1', this.state.player1, gameweek);
+                    console.log('updated player1');
+                }
+        
+                if (this.state.player2) {
+                    this.fillPlayerPicksForEvent('player2', this.state.player2, gameweek);
+                    console.log('updated player2');
+                }
+            }); 
         }); 
-
-        if (this.state.player1) {
-            this.fillPlayerPicksForEvent('player1', this.state.player1, gameweek);
-        }
-
-        if (this.state.player2) {
-            this.fillPlayerPicksForEvent('player2', this.state.player2, gameweek);
-        }
     }
 
     handlePlayerChange(name, playerId) {
