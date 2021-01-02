@@ -121,22 +121,33 @@ body {
 .player-picks {    
   list-style: none;
   padding: 0px;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .player-picks-wrapper {
-  height: 470px;
+  /* height: 470px; */
 }
 
 .player-pick {
-  margin: 8px;
-  line-height: 20px;
+  margin: 1px 4px;
+  height: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .player-pick-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 64%;
+  display: inline-block;
+
   background-color: #00763A;
   color: white;
   font-size: 14px;
-  padding: 4px 10px;
+  padding: 3px 7px;
   border-radius: 5px;
 }  
 
@@ -144,7 +155,6 @@ body {
   width: 20px;
   height: 20px;
   color: white;
-  vertical-align: top;
   display: inline-block;
   margin-left: 2px;
 }
@@ -153,7 +163,8 @@ body {
   background-color: #00FF87;
   color: #2F2F2F;
   font-size: 14px;
-  padding: 4px 10px;
+  padding: 3px 7px;
   border-radius: 5px;
-  margin-left: 5px;
+  margin-left: 4px;
+  display: inline-block;
 }
