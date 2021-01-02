@@ -126,10 +126,6 @@ body {
   flex-direction: column;
 }
 
-.player-picks-wrapper {
-  /* height: 470px; */
-}
-
 .player-pick {
   margin: 1px 4px;
   height: 25px;
