@@ -1,4 +1,4 @@
-import React, { Component, useCallback } from 'react';
+import React, { Component } from 'react';
 
 import GameWeekSelect from './GameWeekSelect';
 import PlayerInfo from './PlayerInfo';
