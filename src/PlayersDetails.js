@@ -134,10 +134,9 @@ class PlayersDetails extends Component {
                     return decoratedPick;
                 });
 
-                const playersToTake = isBenchBoostActive ? 15 : 11;
-                this.setReserves(playersToRender, playersToTake);
-
                 if (!isBenchBoostActive) {
+                    this.setReserves(playersToRender, 11);
+
                     if (isThereAutomaticSubs) {
                         this.showAutomaticSubstitudes(playersToRender, data.automatic_subs);
                     } else {
@@ -148,7 +147,7 @@ class PlayersDetails extends Component {
                 const captain = playersToRender.find(pl => pl.isCaptain);
                 playersToRender.map(pl => pl.points = this.getPickPoints(pl, captain.canPlay));
 
-                const totalPoints = this.getTotalPoints(playersToRender, playersToTake) - transferCosts;
+                const totalPoints = this.getTotalPoints(playersToRender) - transferCosts;
 
                 this.setState({
                     [`${name}totalPoints`]: totalPoints, 
@@ -265,7 +264,7 @@ class PlayersDetails extends Component {
         }
     }
 
-    getTotalPoints(playersToRender, playersToTake) {
+    getTotalPoints(playersToRender) {
         return playersToRender
             .filter(pl => (!pl.isReserve && !pl.goesOut) || (pl.isReserve && pl.goesIn))
             .reduce((acc, curr) => acc + curr.points, 0);
