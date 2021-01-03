@@ -112,14 +112,15 @@ class PlayersDetails extends Component {
                         bonus: actualStat.stats.bonus,
                         hasMatch: playingTeams.includes(actualPlayer.team),
                         canPlay: null,
-                        hasPlayed: actualStat.stats.minutes > 0,
+                        hasPlayed: actualStat.stats.minutes > 0 || actualStat.stats.yellow_cards > 0 || actualStat.stats.red_cards > 0,
                         goesIn: null,
                         goesOut: null,
                         isReserve: null,
                         isCaptain: pick.is_captain,
                         isViceCaptain: pick.is_vice_captain,
                         multiplier: pick.multiplier,
-                        position: pick.position
+                        position: pick.position,
+                        type: actualPlayer.element_type // 1- G, 2 - D, 3 - M, 4 - F
                     };
 
                     decoratedPick.canPlay = this.canPickPlay(decoratedPick, this.state.fixtures);
@@ -168,17 +169,36 @@ class PlayersDetails extends Component {
             allBonuses.sort(function (a, b) {
                 return b.value - a.value;
             });
-            // Take first, second and all equal to the thirds
-            allBonuses = allBonuses.slice(0, 2).concat(allBonuses.filter(bo => bo.value === allBonuses[2].value));
 
-            let biggest = 3;
-            allBonuses[0].points = biggest;
+            let points = 3;
+            allBonuses[0].points = points;
+            let playersWithBonus3 = 1;
+            let playersWithBonus = 1;
+            let result = [allBonuses[0]];
             for (let i = 1; i < allBonuses.length; i++) {
-                let current = allBonuses[i].value === allBonuses[i-1].value ? biggest : --biggest;
-                allBonuses[i].points = current;
+                if (allBonuses[i].value === allBonuses[i-1].value) {
+                    allBonuses[i].points = points;
+                    if (points === 3) {
+                        playersWithBonus3++;
+                    }
+                    playersWithBonus++;
+                    result.push(allBonuses[i]);
+                } else {
+                    if (playersWithBonus >= 3) {
+                        break;
+                    }                    
+                    if (playersWithBonus3 > 1) {
+                        points = 1;
+                    } else {
+                        points--;
+                    }
+                    allBonuses[i].points = points;
+                    playersWithBonus++;
+                    result.push(allBonuses[i]);
+                }
             }
 
-            return allBonuses;
+            return result;
         });     
         
         let concatArrays = (...bonuses) => {
