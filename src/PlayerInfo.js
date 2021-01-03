@@ -18,7 +18,7 @@ class PlayerInfo extends Component {
                         onChange={(pi) => this.handlePlayerChange(pi)} />} 
                 <PlayerPoints points={this.props.totalPoints} /> 
                 {this.props.playersToRender && 
-                    <PlayerPicks picks={this.props.playersToRender} />}                           
+                    <PlayerPicks picks={this.props.playersToRender} addSeparator={this.props.addSeparator} />}                           
             </div>
         );
     }

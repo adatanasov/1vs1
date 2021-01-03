@@ -145,6 +145,12 @@ body {
   align-items: center;
 }
 
+.player-pick.separator {
+  border-bottom: 2px solid black;
+  margin-bottom: 2px;
+  padding-bottom: 2px;
+}
+
 .player-pick-name {
   overflow: hidden;
   white-space: nowrap;
@@ -157,12 +163,74 @@ body {
   font-size: 14px;
   padding: 3px 7px;
   border-radius: 5px;
+  
 }  
 
-.reserve {
-  background-color: #E9E9E5;
-  color: #2F2F2F;
+/* .type1:not(.reserve) { */
+.type1 {
+  background-color: rgba(235, 255, 0, 1);
+  color: #37003C;
+}  
+
+/* .type2:not(.reserve) { */
+.type2 {
+  background-color: rgba(0, 255, 135, 1);
+  color: #37003C;
+}  
+
+/* .type3:not(.reserve) { */
+.type3 {
+  background-color: rgba(5, 240, 255, 1);
+  color: #37003C;
+}  
+
+/* .type4:not(.reserve) { */
+.type4 {
+  background-color: rgba(233, 0, 82, 0.9);
 }
+
+.type1.reserve {
+  background-color: rgba(235, 255, 0, 1);
+  color: #37003C;
+}  
+
+.type2.reserve {
+  background-color: rgba(0, 255, 135, 1);
+  color: #37003C;
+}  
+
+.type3.reserve {
+  background-color: rgba(5, 240, 255, 1);
+  color: #37003C;
+}  
+
+.type4.reserve {
+  background-color: rgba(233, 0, 82, 0.9);
+}
+
+.reserve {
+  /* background-color: #E9E9E5;
+  color: #2F2F2F; */
+  /* background-color: #2F2F2F;
+  color: #E9E9E5; */
+  border: 1px solid #2F2F2F;
+}
+
+/* .type1.reserve {
+  border: 2px solid rgba(235, 255, 0, 1);
+}  
+
+.type2.reserve {
+  border: 2px solid rgba(0, 255, 135, 1);
+}  
+
+.type3.reserve {
+  border: 2px solid rgba(5, 240, 255, 1);
+}  
+
+.type4.reserve {
+  border: 2px solid rgba(233, 0, 82, 1);
+} */
 
 .cap-icon {
   width: 20px;

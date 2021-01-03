@@ -22,7 +22,9 @@ class PlayersDetails extends Component {
             player1totalPoints: 0,
             player2totalPoints: 0,
             player1playersToRender: null,
-            player2playersToRender: null
+            player2playersToRender: null,
+            player1addSeparator: true,
+            player2addSeparator: true
         };
 
         this.refresh = this.refresh.bind(this);
@@ -97,6 +99,7 @@ class PlayersDetails extends Component {
                 let playingTeams = this.state.fixtures.map(f => f.team_h).concat(this.state.fixtures.map(f => f.team_a));
                 let transferCosts = data.entry_history.event_transfers_cost;
                 let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
+                this.setState({[`${name}addSeparator`]: !isBenchBoostActive});
                 let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
                 let currentMatchesBonus = this.getCurrentMatchesBonus(this.state.fixtures);
 
@@ -341,13 +344,15 @@ class PlayersDetails extends Component {
                             rankings={this.state.rankings}
                             totalPoints={this.state.player1totalPoints}
                             playersToRender={this.state.player1playersToRender}
-                            handlePlayerChange={(pi) => this.handlePlayerChange('player1', pi)} />}
+                            handlePlayerChange={(pi) => this.handlePlayerChange('player1', pi)}
+                            addSeparator={this.state.player1addSeparator} />}
                     {this.state.rankings && 
                         <PlayerInfo 
                             rankings={this.state.rankings} 
                             totalPoints={this.state.player2totalPoints}
                             playersToRender={this.state.player2playersToRender}
-                            handlePlayerChange={(pi) => this.handlePlayerChange('player2', pi)} />}
+                            handlePlayerChange={(pi) => this.handlePlayerChange('player2', pi)}
+                            addSeparator={this.state.player2addSeparator} />}
                 </div>
                 <div className="refresh-wrapper">
                     <button 
