@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useCallback } from 'react';
 
 import GameWeekSelect from './GameWeekSelect';
 import PlayerInfo from './PlayerInfo';
@@ -12,6 +12,7 @@ class PlayersDetails extends Component {
             selectedEvent: props.currentEvent,
             rankings: props.rankings,
             footballPlayers: null,
+            teams: null,
             liveStats: null,
             fixtures: null,
             player1: null,
@@ -41,7 +42,7 @@ class PlayersDetails extends Component {
         fetch(`${this.props.baseUrl}/bootstrap-static/`)
         .then(response => response.json())
         .then(data => {
-            this.setState({footballPlayers: data.elements});
+            this.setState({footballPlayers: data.elements, teams: data.teams});
             
             this.handleGameWeekChange(this.state.currentEvent);
         });
@@ -111,6 +112,8 @@ class PlayersDetails extends Component {
                         minutes: actualStat.stats.minutes,
                         bonus: actualStat.stats.bonus,
                         hasMatch: playingTeams.includes(actualPlayer.team),
+                        hasMatchStarted: this.state.fixtures.some(fi => fi.started && (fi.team_h === actualPlayer.team || fi.team_a === actualPlayer.team)),
+                        opposingTeam: this.getOpposingTeamName(this.state.fixtures, this.state.teams, actualPlayer.team),
                         canPlay: null,
                         hasPlayed: actualStat.stats.minutes > 0 || actualStat.stats.yellow_cards > 0 || actualStat.stats.red_cards > 0,
                         goesIn: null,
@@ -157,6 +160,23 @@ class PlayersDetails extends Component {
 
             this.hideLoader();
         });
+    }
+
+    getOpposingTeamName(fixtures, teams, teamId) {
+        let match = fixtures.find(fi => fi.team_h === teamId || fi.team_a === teamId);
+
+        if (match) {
+            let opposingTeamId = '';
+            if (match.team_h === teamId) {
+                opposingTeamId = match.team_a;
+            } else {
+                opposingTeamId = match.team_h;
+            }
+
+            return teams.find(t => t.id === opposingTeamId).short_name;
+        } else {
+            return null;
+        }
     }
 
     getCurrentMatchesBonus(fixtures) {

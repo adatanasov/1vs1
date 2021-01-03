@@ -9,7 +9,7 @@ function PlayerPicks(props) {
             <span className={`player-pick-name ${pick.isReserve ? 'reserve' : ''}`}>{pick.name}</span>
             {pick.isCaptain ? <span className="cap-icon">{captainSvg}</span> : null}
             {pick.isViceCaptain ? <span className="cap-icon">{viceCaptainSvg}</span> : null}
-            <span className="player-pick-points">{pick.hasMatch ? (!pick.canPlay ? 'x' : pick.points) : '-'}</span>
+            <span className="player-pick-points">{pick.hasMatch ? (!pick.canPlay ? 'x' : (pick.hasMatchStarted ? pick.points : pick.opposingTeam)) : '-'}</span>
             {pick.goesOut ? <span className="sub-icon goes-out">{rightIconSvg}</span> : null}
             {pick.goesIn ? <span className="sub-icon goes-in">{leftIconSvg}</span> : null}
         </li>
