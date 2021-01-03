@@ -181,3 +181,19 @@ body {
   margin-left: 4px;
   display: inline-block;
 }
+
+.sub-icon {
+  fill: black;
+  border-radius: 10px;
+  margin-left: 4px;
+  width: 14px;
+  height: 14px;
+}
+
+.goes-in {
+  background-color: #13C905;
+}
+
+.goes-out {
+  background-color: #FF0101;
+}

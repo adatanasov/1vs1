@@ -96,6 +96,7 @@ class PlayersDetails extends Component {
                 let playingTeams = this.state.fixtures.map(f => f.team_h).concat(this.state.fixtures.map(f => f.team_a));
                 let transferCosts = data.entry_history.event_transfers_cost;
                 let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
+                let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
                 let currentMatchesBonus = this.getCurrentMatchesBonus(this.state.fixtures);
 
                 let playersToRender = data.picks.map(pick => {
@@ -109,12 +110,19 @@ class PlayersDetails extends Component {
                         points: actualStat.stats.total_points,
                         minutes: actualStat.stats.minutes,
                         bonus: actualStat.stats.bonus,
-                        isPlaying: playingTeams.includes(actualPlayer.team),
+                        hasMatch: playingTeams.includes(actualPlayer.team),
+                        canPlay: null,
+                        hasPlayed: actualStat.stats.minutes > 0,
+                        goesIn: null,
+                        goesOut: null,
+                        isReserve: null,
                         isCaptain: pick.is_captain,
                         isViceCaptain: pick.is_vice_captain,
                         multiplier: pick.multiplier,
                         position: pick.position
                     };
+
+                    decoratedPick.canPlay = this.canPickPlay(decoratedPick, this.state.fixtures);
 
                     let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
                     if (decoratedPick.bonus === 0 && bonus) {
@@ -128,9 +136,16 @@ class PlayersDetails extends Component {
                 const playersToTake = isBenchBoostActive ? 15 : 11;
                 this.setReserves(playersToRender, playersToTake);
 
+                if (!isBenchBoostActive) {
+                    if (isThereAutomaticSubs) {
+                        this.showAutomaticSubstitudes(playersToRender, data.automatic_subs);
+                    } else {
+                        this.makeSubstitudes(playersToRender);
+                    }
+                }
+
                 const captain = playersToRender.find(pl => pl.isCaptain);
-                const canCaptainPlay = this.canPickPlay(captain, this.state.fixtures);
-                playersToRender.map(pl => pl.points = this.getPickPoints(pl, canCaptainPlay));
+                playersToRender.map(pl => pl.points = this.getPickPoints(pl, captain.canPlay));
 
                 const totalPoints = this.getTotalPoints(playersToRender, playersToTake) - transferCosts;
 
@@ -183,26 +198,47 @@ class PlayersDetails extends Component {
         }
     }
 
-    canPickPlay(decoratedPick, fixtures) {
-        let captainHaveMatch = decoratedPick.isPlaying;
-        let canCaptainPlay = captainHaveMatch;
+    showAutomaticSubstitudes(playersToRender, autoSubs) {
+        for (let i = 0; i < autoSubs.length; i++) {
+            const sub = autoSubs[i];
+            let playerIn = playersToRender.find(pl => pl.id === sub.element_in);
+            playerIn.goesIn = true;
+            let playerOut = playersToRender.find(pl => pl.id === sub.element_out);
+            playerOut.goesOut = true;
+        }
+    }
 
-        if (captainHaveMatch) {
+    makeSubstitudes(playersToRender) {
+        let goalkeeper = playersToRender.find(pl => pl.position === 1);
+        if (!goalkeeper.canPlay) {
+            let reserveGoalkeeper = playersToRender.find(pl => pl.position === 12);
+            if (reserveGoalkeeper.hasPlayed) {
+                goalkeeper.goesOut = true;
+                reserveGoalkeeper.goesIn = true;
+            }
+        }
+    }
+
+    canPickPlay(decoratedPick, fixtures) {
+        const pickHasMatch = decoratedPick.hasMatch;
+        let canPlay = pickHasMatch;
+
+        if (pickHasMatch) {
             let matches = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
             let areAllFinished = !matches.some(m => m.finished === false);
 
             if (areAllFinished) {
-                canCaptainPlay = decoratedPick.minutes > 0;
+                canPlay = decoratedPick.hasPlayed;
             }
         }
 
-        return canCaptainPlay;
+        return canPlay;
     }
 
     getPickPoints(pick, canCaptainPlay) {
         if (pick.isCaptain && canCaptainPlay) {
             return pick.points * pick.multiplier;
-        } else if (pick.isViceCaptain && pick.isPlaying && !canCaptainPlay) {
+        } else if (pick.isViceCaptain && pick.hasMatch && !canCaptainPlay) {
             return pick.points * pick.multiplier;
         } else {
             return pick.points;
@@ -210,7 +246,9 @@ class PlayersDetails extends Component {
     }
 
     getTotalPoints(playersToRender, playersToTake) {
-        return playersToRender.slice(0, playersToTake).reduce((acc, curr) => acc + curr.points, 0);
+        return playersToRender
+            .filter(pl => (!pl.isReserve && !pl.goesOut) || (pl.isReserve && pl.goesIn))
+            .reduce((acc, curr) => acc + curr.points, 0);
     }
 
     render() {
