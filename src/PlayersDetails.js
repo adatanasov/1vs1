@@ -248,6 +248,7 @@ class PlayersDetails extends Component {
                     if (reserve.hasPlayed) {
                         titular.goesOut = true;
                         reserve.goesIn = true;
+                        break;
                     } else {
                         break;
                     }
