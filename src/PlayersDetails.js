@@ -236,6 +236,43 @@ class PlayersDetails extends Component {
                 reserveGoalkeeper.goesIn = true;
             }
         }
+
+        let notPlayingTitulars = playersToRender.filter(pl => pl.position > 1 && !pl.isReserve && (!pl.hasMatch || !pl.canPlay));
+        let reserves = playersToRender.filter(pl => pl.position > 12 && pl.canPlay);
+
+        for (let i = 0; i < notPlayingTitulars.length; i++) {
+            let titular = notPlayingTitulars[i];
+            for (let j = 0; j < reserves.length; j++) {
+                let reserve = reserves[j];
+                if (!reserve.goesIn && this.canChangePlayer(playersToRender, titular.type, reserve.type)) {
+                    if (reserve.hasPlayed) {
+                        titular.goesOut = true;
+                        reserve.goesIn = true;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    canChangePlayer(playersToRender, titularType, reserveType) {
+        if (titularType === reserveType || titularType === 3) {
+            return true;
+        } 
+        
+        let currentPlayers = playersToRender.filter(pl => (!pl.isReserve && !pl.goesOut) || (pl.isReserve && pl.goesOut));
+        let remainingFromType = currentPlayers.filter(pl => pl.type === titularType).length;
+
+        if (titularType === 2 && remainingFromType <= 3) {
+            return false;
+        }
+
+        if (titularType === 4 && remainingFromType <= 1) {
+            return false;
+        }
+
+        return true;
     }
 
     canPickPlay(decoratedPick, fixtures) {
@@ -244,7 +281,7 @@ class PlayersDetails extends Component {
 
         if (pickHasMatch) {
             let matches = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
-            let areAllFinished = !matches.some(m => m.finished === false);
+            let areAllFinished = !matches.some(m => m.finished_provisional === false);
 
             if (areAllFinished) {
                 canPlay = decoratedPick.hasPlayed;
