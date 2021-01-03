@@ -125,31 +125,19 @@ class PlayersDetails extends Component {
                     return decoratedPick;
                 });
 
-                let captain = playersToRender.find(pl => pl.isCaptain);
-                let captainHaveMatch = captain.isPlaying;
-                let canCaptainPlay = captainHaveMatch;
+                const playersToTake = isBenchBoostActive ? 15 : 11;
+                this.setReserves(playersToRender, playersToTake);
 
-                if (captainHaveMatch) {
-                    let matches = this.state.fixtures.filter(fi => fi.team_h === captain.teamId || fi.team_a === captain.teamId);
-                    let areAllFinished = !matches.some(m => m.finished === false);
-
-                    if (areAllFinished) {
-                        canCaptainPlay = captain.minutes > 0;
-                    }
-                }
-                
-                let playersToTake = isBenchBoostActive ? 15 : 11;
-                for (let i = playersToTake; i < playersToRender.length; i++) {
-                    playersToRender[i].isReserve = true;                    
-                }
-
+                const captain = playersToRender.find(pl => pl.isCaptain);
+                const canCaptainPlay = this.canPickPlay(captain, this.state.fixtures);
                 playersToRender.map(pl => pl.points = this.getPickPoints(pl, canCaptainPlay));
 
-                this.setState({[`${name}playersToRender`]: playersToRender});
+                const totalPoints = this.getTotalPoints(playersToRender, playersToTake) - transferCosts;
 
-                let totalPoints = playersToRender.slice(0, playersToTake).reduce((acc, curr) => acc + curr.points, 0) - transferCosts;
-
-                this.setState({[`${name}totalPoints`]: totalPoints});
+                this.setState({
+                    [`${name}totalPoints`]: totalPoints, 
+                    [`${name}playersToRender`]: playersToRender
+                });
             }
 
             this.hideLoader();
@@ -189,6 +177,28 @@ class PlayersDetails extends Component {
         return result;
     }
 
+    setReserves(playersToRender, playersToTake) {        
+        for (let i = playersToTake; i < playersToRender.length; i++) {
+            playersToRender[i].isReserve = true;                    
+        }
+    }
+
+    canPickPlay(decoratedPick, fixtures) {
+        let captainHaveMatch = decoratedPick.isPlaying;
+        let canCaptainPlay = captainHaveMatch;
+
+        if (captainHaveMatch) {
+            let matches = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
+            let areAllFinished = !matches.some(m => m.finished === false);
+
+            if (areAllFinished) {
+                canCaptainPlay = decoratedPick.minutes > 0;
+            }
+        }
+
+        return canCaptainPlay;
+    }
+
     getPickPoints(pick, canCaptainPlay) {
         if (pick.isCaptain && canCaptainPlay) {
             return pick.points * pick.multiplier;
@@ -197,6 +207,10 @@ class PlayersDetails extends Component {
         } else {
             return pick.points;
         }
+    }
+
+    getTotalPoints(playersToRender, playersToTake) {
+        return playersToRender.slice(0, playersToTake).reduce((acc, curr) => acc + curr.points, 0);
     }
 
     render() {

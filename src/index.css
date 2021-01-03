@@ -19,13 +19,18 @@ body {
 .submit-entry,.refresh {
   margin-top: 15px;
   color: #fff;
-  background-color: #37003C;
+  background-color: rgb(55, 0, 60);
   padding: 3px 25px;
   font-family: Roboto,sans-serif;
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
   border: 1px solid transparent;
+}
+
+.refresh:disabled{
+  background:  rgba(55, 0, 60, 0.5);
+  cursor: no-drop;
 }
 
 #root, .refresh-wrapper {
