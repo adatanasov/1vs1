@@ -151,7 +151,7 @@ class PlayersDetails extends Component {
                 }
 
                 const captain = playersToRender.find(pl => pl.isCaptain);
-                playersToRender.map(pl => pl.points = this.getPickPoints(pl, captain.canPlay));
+                playersToRender.map(pl => pl.points = this.getPickPoints(pl, captain.canPlay, captain.multiplier));
 
                 const totalPoints = this.getTotalPoints(playersToRender) - transferCosts;
 
@@ -315,11 +315,11 @@ class PlayersDetails extends Component {
         return canPlay;
     }
 
-    getPickPoints(pick, canCaptainPlay) {
+    getPickPoints(pick, canCaptainPlay, captainMultiplier) {
         if (pick.isCaptain && canCaptainPlay) {
             return pick.points * pick.multiplier;
         } else if (pick.isViceCaptain && pick.hasMatch && !canCaptainPlay) {
-            return pick.points * pick.multiplier;
+            return pick.points * captainMultiplier;
         } else {
             return pick.points;
         }
