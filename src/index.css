@@ -240,6 +240,11 @@ body {
   margin-left: 2px;
 }
 
+.cap-icon.inverted {
+  color: black;
+  fill: white;
+}
+
 .player-pick-points {
   background-color: #00FF87;
   color: #2F2F2F;

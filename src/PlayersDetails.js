@@ -99,6 +99,7 @@ class PlayersDetails extends Component {
                 let playingTeams = this.state.fixtures.map(f => f.team_h).concat(this.state.fixtures.map(f => f.team_a));
                 let transferCosts = data.entry_history.event_transfers_cost;
                 let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
+                let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
                 this.setState({[`${name}addSeparator`]: !isBenchBoostActive});
                 let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
                 let currentMatchesBonus = this.getCurrentMatchesBonus(this.state.fixtures);
@@ -124,6 +125,7 @@ class PlayersDetails extends Component {
                         isReserve: null,
                         isCaptain: pick.is_captain,
                         isViceCaptain: pick.is_vice_captain,
+                        isTripleCaptainActive: isTripleCaptainActive,
                         multiplier: pick.multiplier,
                         position: pick.position,
                         type: actualPlayer.element_type // 1- G, 2 - D, 3 - M, 4 - F
