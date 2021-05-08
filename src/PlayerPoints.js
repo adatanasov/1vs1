@@ -4,6 +4,10 @@ function PlayerPoints(props) {
             <span className="points">
                 {props.points}
             </span>
+            {props.minusPoints < 0 && 
+                <span className="minusPoints">
+                    ({props.minusPoints})
+                </span>}
         </div>
     );
 }

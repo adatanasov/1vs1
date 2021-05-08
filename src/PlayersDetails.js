@@ -21,6 +21,8 @@ class PlayersDetails extends Component {
             player2picks: null, 
             player1totalPoints: 0,
             player2totalPoints: 0,
+            player1minusPoints: null,
+            player2minusPoints: null,
             player1playersToRender: null,
             player2playersToRender: null,
             player1addSeparator: true,
@@ -159,6 +161,7 @@ class PlayersDetails extends Component {
 
                 this.setState({
                     [`${name}totalPoints`]: totalPoints, 
+                    [`${name}minusPoints`]: -transferCosts, 
                     [`${name}playersToRender`]: playersToRender
                 });
             }
@@ -335,7 +338,7 @@ class PlayersDetails extends Component {
 
     render() {
         return (
-            <div>
+            <div className="details-wrapper">
                 {this.state.currentEvent && 
                     <GameWeekSelect 
                         currentEvent={this.state.currentEvent} 
@@ -345,6 +348,7 @@ class PlayersDetails extends Component {
                         <PlayerInfo 
                             rankings={this.state.rankings}
                             totalPoints={this.state.player1totalPoints}
+                            minusPoints={this.state.player1minusPoints}
                             playersToRender={this.state.player1playersToRender}
                             handlePlayerChange={(pi) => this.handlePlayerChange('player1', pi)}
                             addSeparator={this.state.player1addSeparator} />}
@@ -352,6 +356,7 @@ class PlayersDetails extends Component {
                         <PlayerInfo 
                             rankings={this.state.rankings} 
                             totalPoints={this.state.player2totalPoints}
+                            minusPoints={this.state.player2minusPoints}
                             playersToRender={this.state.player2playersToRender}
                             handlePlayerChange={(pi) => this.handlePlayerChange('player2', pi)}
                             addSeparator={this.state.player2addSeparator} />}
@@ -362,6 +367,7 @@ class PlayersDetails extends Component {
                         className="refresh"
                         disabled={this.state.isLoading}>Refresh</button>
                 </div>
+                <div className="version">v.1.13</div>
             </div>
         );
     }

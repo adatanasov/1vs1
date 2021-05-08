@@ -9,11 +9,23 @@ body {
   max-width: 424px;
 }
 
+.details-wrapper {
+  position: relative;
+}
+
+.version {
+  right: 0px;
+  bottom: 0px;
+  padding: 20px;
+  position: absolute;
+}
+
 .loader {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%,-50%);
+  z-index: 100;
 }
 
 .submit-entry,.refresh {
