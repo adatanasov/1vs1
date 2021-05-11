@@ -136,8 +136,8 @@ class PlayersDetails extends Component {
                     decoratedPick.canPlay = this.canPickPlay(decoratedPick, this.state.fixtures);
 
                     let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
-                    if (decoratedPick.bonus === 0 && bonus) {
-                        decoratedPick.bonus = bonus.points;
+                    if (bonus) {
+                        decoratedPick.bonus += bonus.points;
                         decoratedPick.points += bonus.points;
                     }
 
