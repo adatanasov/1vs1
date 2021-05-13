@@ -125,8 +125,10 @@ body {
 .points-wrapper {
   background-color: white;
   color: #FF2882;
-  width: 90px;
+  min-width: 90px;
+  max-width: max-content;
   height: 50px;
+  padding: 0px 5px;
   margin: auto;
   margin-top: 10px;
   margin-bottom: 10px;
