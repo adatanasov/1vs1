@@ -130,7 +130,8 @@ class PlayersDetails extends Component {
                         isTripleCaptainActive: isTripleCaptainActive,
                         multiplier: pick.multiplier,
                         position: pick.position,
-                        type: actualPlayer.element_type // 1- G, 2 - D, 3 - M, 4 - F
+                        type: actualPlayer.element_type, // 1- G, 2 - D, 3 - M, 4 - F
+                        chance: actualPlayer.chance_of_playing_this_round ?? 100
                     };
 
                     decoratedPick.canPlay = this.canPickPlay(decoratedPick, this.state.fixtures);
@@ -367,7 +368,7 @@ class PlayersDetails extends Component {
                         className="refresh"
                         disabled={this.state.isLoading}>Refresh</button>
                 </div>
-                <div className="version">v.1.15</div>
+                <div className="version">v.1.16</div>
             </div>
         );
     }

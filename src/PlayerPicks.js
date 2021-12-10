@@ -6,7 +6,10 @@ function PlayerPicks(props) {
 
     let picks = props.picks.map(pick => (
         <li key={pick.id} className={`player-pick ${props.addSeparator && pick.position === 11 ? 'separator' : ''}`}>
-            <span className={`player-pick-name ${pick.isReserve ? 'reserve' : ''} type${pick.type}`}>{pick.name}</span>
+            <span className={`player-pick-name ${pick.isReserve ? 'reserve' : ''} type${pick.type}`}>
+                <span className={`chance chance-${pick.chance}`}></span>
+                {pick.name}
+            </span>
             {pick.isCaptain ? <span className={`cap-icon ${pick.isTripleCaptainActive ? 'inverted' : ''}`}>{captainSvg}</span> : null}
             {pick.isViceCaptain ? <span className={`cap-icon ${pick.isTripleCaptainActive ? 'inverted' : ''}`}>{viceCaptainSvg}</span> : null}
             <span className="player-pick-points">
