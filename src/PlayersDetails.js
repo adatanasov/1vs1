@@ -369,7 +369,7 @@ class PlayersDetails extends Component {
                         className="refresh"
                         disabled={this.state.isLoading}>Refresh</button>
                 </div>
-                <div className="version">v.1.17</div>
+                <div className="version">v.1.18</div>
             </div>
         );
     }
