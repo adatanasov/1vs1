@@ -156,7 +156,7 @@ class PlayersDetails extends Component {
                 }
 
                 const captain = playersToRender.find(pl => pl.isCaptain);
-                const multiplier = captain.multiplier !== 0 ? captain.multiplier : (isTripleCaptainActive ? 3 : 2);
+                const multiplier = isTripleCaptainActive ? 3 : 2;
                 playersToRender.map(pl => pl.points = this.getPickPoints(pl, captain.canPlay, multiplier));
 
                 const totalPoints = this.getTotalPoints(playersToRender) - transferCosts;
