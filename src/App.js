@@ -6,7 +6,7 @@ import PlayerName from './PlayerName';
 import LeagueSelect from './LeagueSelect';
 import PlayersDetails from './PlayersDetails';
 
-var ProxyUrl = 'https://limitless-coast-80720.herokuapp.com/';
+var ProxyUrl = 'https://cryptic-plains-87247.herokuapp.com/';
 var ApiBaseUrl = 'https://fantasy.premierleague.com/api';
 
 class App extends Component {
