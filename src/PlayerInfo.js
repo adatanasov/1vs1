@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import PlayerSelector from './PlayerSelector';
 import PlayerPoints from './PlayerPoints';
 import PlayerPicks from './PlayerPicks';

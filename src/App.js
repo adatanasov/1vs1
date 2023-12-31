@@ -203,8 +203,6 @@ class App extends Component {
                         gameweek={this.state.gameweek} 
                         matches={this.state.matches}
                         inProgress={this.state.inProgress}
-                        showLoader={() => this.showLoader()}
-                        hideLoader={() => this.hideLoader()} 
                         openMatch={(p1,p2) => this.openMatch(p1,p2)}
                         refreshAll={() => this.refreshAll()} />}
                 {this.state.playerId && this.state.gameweek && 

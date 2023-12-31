@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import * as PointsCalculator from './PointsCalculator';
 import PlayerInfo from './PlayerInfo';
+import * as PointsCalculator from './PointsCalculator';
 
 class PlayersDetails extends Component {
     constructor(props) {

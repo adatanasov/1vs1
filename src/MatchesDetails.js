@@ -19,16 +19,6 @@ class MatchesDetails extends Component {
         this.props.refreshAll();
     }
 
-    showLoader() {
-        this.setState({isLoading: true});
-        this.props.showLoader();
-    }
-
-    hideLoader() {
-        this.setState({isLoading: false});
-        this.props.hideLoader();
-    }
-
     render() {
     if (this.props.matches && this.props.matches.length > 0) {
         const allMatches = this.props.matches.map(m => (
