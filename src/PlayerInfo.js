@@ -13,7 +13,8 @@ class PlayerInfo extends Component {
         return (
             <div className="player-info">
                 {this.props.rankings && 
-                    <PlayerSelector 
+                    <PlayerSelector
+                        playerId={this.props.playerId}
                         rankings={this.props.rankings} 
                         onChange={(pi) => this.handlePlayerChange(pi)} />} 
                 <PlayerPoints points={this.props.totalPoints} minusPoints={this.props.minusPoints}/> 

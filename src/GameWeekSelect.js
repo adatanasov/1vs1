@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class GameWeekSelect extends Component {
     constructor(props) {
         super(props);
-        this.state = {currentEvent: props.currentEvent, value: 'GW' + props.currentEvent};
+        this.state = {value: props.currentEvent};
   
         this.handleChange = this.handleChange.bind(this);
     }
@@ -15,14 +15,13 @@ class GameWeekSelect extends Component {
     }
   
     render() {
-        let gameweeks = Array(this.props.currentEvent);
-        let start = this.props.currentEvent;
+        let gameweeks = Array(38);
         for (let i = 0; i < gameweeks.length; i++) {
-            gameweeks[i] = 'GW' + start--;            
+            gameweeks[i] = {name: `GW ${i+1}${this.props.currentEvent === i+1 ? " - current" : ""}`, value: i+1};            
         }
 
         const options = gameweeks.map(gw => (
-            <option key={gw} value={gw.slice(2)}>{gw}</option>
+            <option key={gw.name} value={gw.value}>{gw.name}</option>
         ));
 
         return (

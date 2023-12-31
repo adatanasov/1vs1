@@ -5,7 +5,7 @@ body {
 }
 
 .app {    
-  margin: 20px;
+  margin: 10px;
   max-width: 424px;
 }
 
@@ -49,6 +49,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.back {
+  margin-right: 60px;
 }
 
 .entry-info {
@@ -142,6 +146,14 @@ body {
 .points {
   font-size: 3rem;
   font-weight: normal;
+}
+
+.points-small {
+  font-size: 2rem;
+  font-weight: normal;
+  text-align: center;
+  min-width: 36px;
+  display: inline-block;
 }
 
 .player-picks {    
@@ -266,4 +278,64 @@ body {
 
 .goes-out {
   background-color: #FF0101;
+}
+
+.match-row {
+  height: 40px;
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 5px 1px;
+  cursor: pointer;
+  margin-bottom: 2px;
+  background-color: rgba(55, 0, 60, 0.8);
+  color: white;
+}
+
+.match-row.own-match {
+  background-color: rgba(55, 0, 60, 1);
+}
+
+.match-row:first-of-type {
+  margin-top: 10px;
+}
+
+.match-player {
+  display: inline-block;
+  width: 33%;
+  overflow: hidden;
+  line-height: 20px;
+  vertical-align: bottom;
+  /* color: rgb(55, 0, 60); */
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.pr5 {
+  padding-right: 5px;
+}
+
+.pl5 {
+  padding-left: 5px;
+}
+
+.pr10 {
+  padding-right: 10px;
+}
+
+.pl10 {
+  padding-left: 10px;
 }

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class PlayerSelector extends Component {
     constructor(props) {
         super(props);
-        this.state = {value: "Select a player"};
+        this.state = {value: this.props.playerId ?? "Select a player"};
 
         this.handleChange = this.handleChange.bind(this);
     }

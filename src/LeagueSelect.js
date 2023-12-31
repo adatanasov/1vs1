@@ -17,7 +17,7 @@ class LeagueSelect extends Component {
 
         const allLeagues = [ ...this.state.leagues.classic, ...this.state.leagues.h2h ];
         const league = allLeagues.find(el => el.id === +leagueId);
-        this.props.onChange(league);
+        this.props.onChange(league, true);
     }
   
     render() {
