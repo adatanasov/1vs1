@@ -38,6 +38,7 @@ class App extends Component {
             selectedLeague: null, 
             rankings: null,
             matches: null,
+            showMatches: false,
             footballPlayers: null,
             teams: null,
             liveStats: null,
@@ -93,7 +94,7 @@ class App extends Component {
         this.setState({playerId: null, playerName: null, playerInfo: null, leagues: null});
     }
 
-    async handleLeagueChange(league, shouldRefresh) {
+    async handleLeagueChange(league) {
         this.showLoader();
         league.ish2h = league.scoring === 'h';
         this.setState({selectedLeague: league});
@@ -102,9 +103,9 @@ class App extends Component {
 
         if (league.ish2h && leagueData.matches) {
             let inProgress = leagueData.matches[0].entry_1_total === 0 && leagueData.matches[0].entry_2_total === 0;
-            this.setState({inProgress: inProgress});
+            this.setState({inProgress: inProgress, showMatches: true});
 
-            if (inProgress && shouldRefresh && this.state.currentGameweek >= this.state.gameweek) {
+            if (inProgress && this.state.currentGameweek === this.state.gameweek) {
                 for (let i = 0; i < leagueData.matches.length; i++) {
                     let m = leagueData.matches[i];
                     
@@ -119,6 +120,8 @@ class App extends Component {
                     m.entry_2_points = player2TotalPoints;
                 }
             }
+        } else {
+            this.setState({showMatches: false});
         }
 
         this.setState(leagueData);
@@ -136,9 +139,8 @@ class App extends Component {
         this.setState(fixturesData);
         this.setState({gameweek: gameweek});
 
-        if (this.state.selectedLeague?.ish2h) {
-            let shouldRefresh = gameweek === this.state.currentGameweek;
-            this.handleLeagueChange(this.state.selectedLeague, shouldRefresh)
+        if (this.state.selectedLeague?.ish2h && this.state.showMatches) {
+            this.handleLeagueChange(this.state.selectedLeague)
         }
 
         this.hideLoader();
@@ -149,11 +151,11 @@ class App extends Component {
     }
 
     openMatch(player1Id, player2Id) {
-        this.setState({player1: player1Id, player2: player2Id, matches: null});
+        this.setState({player1: player1Id, player2: player2Id, showMatches: false});
     }
 
     backToLeague() {
-        this.handleLeagueChange(this.state.selectedLeague, false);
+        this.setState({showMatches: true});
     }
 
     refresh() {
@@ -161,7 +163,7 @@ class App extends Component {
     }
 
     refreshAll() {
-        this.handleLeagueChange(this.state.selectedLeague, true);
+        this.handleLeagueChange(this.state.selectedLeague);
     }
 
     showLoader() {
@@ -192,12 +194,12 @@ class App extends Component {
                 {this.state.playerId && this.state.leagues && 
                     <LeagueSelect 
                         leagues={this.state.leagues} 
-                        onChange={(d,r) => this.handleLeagueChange(d,r)} />}
+                        onChange={(d) => this.handleLeagueChange(d)} />}
                 {this.state.gameweek && this.state.rankings &&
                     <GameWeekSelect 
                         currentEvent={this.state.currentGameweek} 
                         onChange={(d) => this.handleGameWeekChange(d)} />}
-                {this.state.matches && 
+                {this.state.matches && this.state.showMatches &&
                     <MatchesDetails 
                         playerId={this.state.playerId}
                         gameweek={this.state.gameweek} 
@@ -207,7 +209,7 @@ class App extends Component {
                         refreshAll={() => this.refreshAll()} />}
                 {this.state.playerId && this.state.gameweek && 
                     this.state.liveStats && this.state.fixtures &&
-                    this.state.rankings && !this.state.matches &&
+                    this.state.rankings && !this.state.showMatches &&
                     <PlayersDetails
                         player1={this.state.player1}
                         player2={this.state.player2}
