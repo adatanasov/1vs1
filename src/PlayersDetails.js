@@ -42,6 +42,8 @@ class PlayersDetails extends Component {
     }
 
     componentDidMount() {
+        // console.log('details mount');
+        // console.log(this.props.liveStats.filter(p => p.id === 308));
         if (this.props.currentGameweek >= this.props.gameweek) {            
             if (this.props.player1) {
                 this.fillPlayerPicksForEvent('player1', this.props.player1, this.props.gameweek);
@@ -62,8 +64,9 @@ class PlayersDetails extends Component {
 
         if (this.props.footballPlayers && this.props.teams && this.props.liveStats && this.props.fixtures) {
             let data = await PointsCalculator.GetPicksData(
-                name, playerId, event, this.props.footballPlayers, this.props.teams, this.props.liveStats, this.props.fixtures);
+                name, playerId, event, this.props.footballPlayers, this.props.teams);
             this.setState(data);
+            // console.log(data);
         }
 
         this.hideLoader();
@@ -75,7 +78,7 @@ class PlayersDetails extends Component {
                 <div className="players-info">
                     {this.props.rankings && 
                         <PlayerInfo 
-                            key={this.props.player1}
+                            key={`${this.props.player1}-${this.state.player1totalPoints}`}
                             playerId={this.props.player1}
                             rankings={this.props.rankings}
                             totalPoints={this.state.player1totalPoints}
@@ -85,7 +88,7 @@ class PlayersDetails extends Component {
                             addSeparator={this.state.player1addSeparator} />}
                     {this.props.rankings && 
                         <PlayerInfo 
-                            key={this.props.player2}
+                            key={`${this.props.player2}-${this.state.player2totalPoints}`}
                             playerId={this.props.player2}
                             rankings={this.props.rankings} 
                             totalPoints={this.state.player2totalPoints}

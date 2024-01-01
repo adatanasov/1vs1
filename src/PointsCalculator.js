@@ -1,7 +1,9 @@
 import * as FantasyAPI from './FantasyAPI';
 
-export async function GetPicksData(name, playerId, event, footballPlayers, teams, liveStats, fixtures) {
+export async function GetPicksData(name, playerId, event, footballPlayers, teams) {
     let data = await FantasyAPI.getPlayerPicksForEvent(playerId, event);
+    let liveStats = await FantasyAPI.getGameweekFootballersData(event);
+    let fixtures = await FantasyAPI.getGameweekFixturesData(event);
     let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
     let transferCosts = data.entry_history.event_transfers_cost;
     let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
@@ -12,6 +14,10 @@ export async function GetPicksData(name, playerId, event, footballPlayers, teams
     let playersToRender = data.picks.map(pick => {
         let actualPlayer = footballPlayers.find(pl => pl.id === pick.element);
         let actualStat = liveStats.find(pl => pl.id === pick.element);
+
+        if (pick.element === 308) {
+            console.log(actualStat.stats.total_points);
+        }
         
         let decoratedPick = {
             id: pick.element, 

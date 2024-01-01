@@ -56,7 +56,7 @@ export async function getGameweekFootballersData(gameweek) {
     return fetch(`${url}/event/${gameweek}/live/`)
     .then(response => response.json())
     .then(liveData => {
-        return {liveStats: liveData.elements};
+        return liveData.elements;
     }); 
 }
 
@@ -64,7 +64,7 @@ export async function getGameweekFixturesData(gameweek) {
     return fetch(`${url}/fixtures/?event=${gameweek}`)
     .then(response2 => response2.json())
     .then(data => {
-        return {fixtures: data};
+        return data;
     });
 }
 

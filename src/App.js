@@ -45,7 +45,8 @@ class App extends Component {
             fixtures: null,
             player1: playerId,
             player2: null,
-            inProgress: null
+            inProgress: null,
+            seed: 'new'
         };
     }
 
@@ -110,12 +111,12 @@ class App extends Component {
                     let m = leagueData.matches[i];
                     
                     let player1Data = await PointsCalculator.GetPicksData(
-                        m.entry_1_entry, m.entry_1_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams, this.state.liveStats, this.state.fixtures);
+                        m.entry_1_entry, m.entry_1_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams);
                     let player1TotalPoints = player1Data[`${m.entry_1_entry}totalPoints`];
                     m.entry_1_points = player1TotalPoints;
 
                     let player2Data = await PointsCalculator.GetPicksData(
-                        m.entry_2_entry, m.entry_2_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams, this.state.liveStats, this.state.fixtures);
+                        m.entry_2_entry, m.entry_2_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams);
                     let player2TotalPoints = player2Data[`${m.entry_2_entry}totalPoints`];
                     m.entry_2_points = player2TotalPoints;
                 }
@@ -133,11 +134,9 @@ class App extends Component {
     async handleGameWeekChange(gameweek) {
         this.showLoader();
 
-        let footballersData = await FantasyAPI.getGameweekFootballersData(gameweek);
-        let fixturesData = await FantasyAPI.getGameweekFixturesData(gameweek);
-        this.setState(footballersData);
-        this.setState(fixturesData);
-        this.setState({gameweek: gameweek});
+        let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
+        let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
+        this.setState({liveStats: liveStats, fixtures: fixtures, gameweek: gameweek});
 
         if (this.state.selectedLeague?.ish2h && this.state.showMatches) {
             this.handleLeagueChange(this.state.selectedLeague)
@@ -159,7 +158,8 @@ class App extends Component {
     }
 
     refresh() {
-        this.handleGameWeekChange(this.state.gameweek);
+        //this.handleGameWeekChange(this.state.gameweek);
+        this.setState({seed: new Date().getTime()});
     }
 
     refreshAll() {
@@ -213,7 +213,7 @@ class App extends Component {
                     <PlayersDetails
                         player1={this.state.player1}
                         player2={this.state.player2}
-                        key={`${this.state.gameweek}-${this.state.player1}-${this.state.player2}`}
+                        key={`${this.state.gameweek}-${this.state.player1}-${this.state.player2}-${this.state.seed}`}
                         gameweek={this.state.gameweek}
                         currentGameweek={this.state.currentGameweek}
                         rankings={this.state.rankings}
