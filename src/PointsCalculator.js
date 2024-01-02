@@ -1,83 +1,93 @@
 import * as FantasyAPI from './FantasyAPI';
 
-export async function GetPicksData(name, playerId, event, footballPlayers, teams) {
-    let data = await FantasyAPI.getPlayerPicksForEvent(playerId, event);
-    let liveStats = await FantasyAPI.getGameweekFootballersData(event);
-    let fixtures = await FantasyAPI.getGameweekFixturesData(event);
-    let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
-    let transferCosts = data.entry_history.event_transfers_cost;
-    let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
-    let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
-    let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
-    let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
+export async function GetMultiplePicksData(picks, gameweek, footballPlayers, teams) {
+    let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
+    let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
+    let result = [];
 
-    let playersToRender = data.picks.map(pick => {
-        let actualPlayer = footballPlayers.find(pl => pl.id === pick.element);
-        let actualStat = liveStats.find(pl => pl.id === pick.element);
-
-        if (pick.element === 308) {
-            console.log(actualStat.stats.total_points);
-        }
+    for (let i = 0; i < picks.length; i++) {
+        const pick = picks[i];
         
-        let decoratedPick = {
-            id: pick.element, 
-            teamId: actualPlayer.team,
-            name: actualPlayer.web_name, 
-            points: actualStat.stats.total_points,
-            minutes: actualStat.stats.minutes,
-            bonus: actualStat.stats.bonus,
-            hasMatch: playingTeams.includes(actualPlayer.team),
-            hasMatchStarted: fixtures.some(fi => fi.started && (fi.team_h === actualPlayer.team || fi.team_a === actualPlayer.team)),
-            opposingTeam: getOpposingTeamName(fixtures, teams, actualPlayer.team),
-            canPlay: null,
-            hasPlayed: actualStat.stats.minutes > 0 || actualStat.stats.yellow_cards > 0 || actualStat.stats.red_cards > 0,
-            goesIn: null,
-            goesOut: null,
-            isReserve: null,
-            isCaptain: pick.is_captain,
-            isViceCaptain: pick.is_vice_captain,
-            isTripleCaptainActive: isTripleCaptainActive,
-            multiplier: pick.multiplier,
-            position: pick.position,
-            type: actualPlayer.element_type, // 1- G, 2 - D, 3 - M, 4 - F
-            chance: actualPlayer.chance_of_playing_this_round ?? 100
+        let name = pick.name;
+        let playerId = pick.id;
+        //TODO: try to call this async for all to save time
+        let data = await FantasyAPI.getPlayerPicksForEvent(playerId, gameweek);
+
+        let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
+        let transferCosts = data.entry_history.event_transfers_cost;
+        let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
+        let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
+        let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
+        let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
+
+        let playersToRender = data.picks.map(pick => {
+            let actualPlayer = footballPlayers.find(pl => pl.id === pick.element);
+            let actualStat = liveStats.find(pl => pl.id === pick.element);
+            
+            let decoratedPick = {
+                id: pick.element, 
+                teamId: actualPlayer.team,
+                name: actualPlayer.web_name, 
+                points: actualStat.stats.total_points,
+                minutes: actualStat.stats.minutes,
+                bonus: actualStat.stats.bonus,
+                hasMatch: playingTeams.includes(actualPlayer.team),
+                hasMatchStarted: fixtures.some(fi => fi.started && (fi.team_h === actualPlayer.team || fi.team_a === actualPlayer.team)),
+                opposingTeam: getOpposingTeamName(fixtures, teams, actualPlayer.team),
+                canPlay: null,
+                hasPlayed: actualStat.stats.minutes > 0 || actualStat.stats.yellow_cards > 0 || actualStat.stats.red_cards > 0,
+                goesIn: null,
+                goesOut: null,
+                isReserve: null,
+                isCaptain: pick.is_captain,
+                isViceCaptain: pick.is_vice_captain,
+                isTripleCaptainActive: isTripleCaptainActive,
+                multiplier: pick.multiplier,
+                position: pick.position,
+                type: actualPlayer.element_type, // 1- G, 2 - D, 3 - M, 4 - F
+                chance: actualPlayer.chance_of_playing_this_round ?? 100
+            };
+    
+            decoratedPick.canPlay = canPickPlay(decoratedPick, fixtures);
+    
+            let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
+            if (bonus) {
+                decoratedPick.bonus += bonus.points;
+                decoratedPick.points += bonus.points;
+            }
+    
+            return decoratedPick;
+        });
+    
+        if (!isBenchBoostActive) {
+            setReserves(playersToRender, 11);
+    
+            if (isThereAutomaticSubs) {
+                showAutomaticSubstitudes(playersToRender, data.automatic_subs);
+            } else {
+                makeSubstitudes(playersToRender);
+            }
+        }
+    
+        const captain = playersToRender.find(pl => pl.isCaptain);
+        const multiplier = isTripleCaptainActive ? 3 : 2;
+        playersToRender.map(pl => pl.points = getPickPoints(pl, captain.canPlay, multiplier));
+    
+        const totalPoints = getTotalPoints(playersToRender) - transferCosts;
+    
+        //TODO: remove the name from the properties names
+        let currentResult = {
+            id: playerId,
+            [`${name}picks`]: data.picks,
+            [`${name}addSeparator`]: !isBenchBoostActive,
+            [`${name}totalPoints`]: totalPoints,
+            [`${name}minusPoints`]: -transferCosts,
+            [`${name}playersToRender`]: playersToRender
         };
-
-        decoratedPick.canPlay = canPickPlay(decoratedPick, fixtures);
-
-        let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
-        if (bonus) {
-            decoratedPick.bonus += bonus.points;
-            decoratedPick.points += bonus.points;
-        }
-
-        return decoratedPick;
-    });
-
-    if (!isBenchBoostActive) {
-        setReserves(playersToRender, 11);
-
-        if (isThereAutomaticSubs) {
-            showAutomaticSubstitudes(playersToRender, data.automatic_subs);
-        } else {
-            makeSubstitudes(playersToRender);
-        }
+        
+        result.push(currentResult);
     }
 
-    const captain = playersToRender.find(pl => pl.isCaptain);
-    const multiplier = isTripleCaptainActive ? 3 : 2;
-    playersToRender.map(pl => pl.points = getPickPoints(pl, captain.canPlay, multiplier));
-
-    const totalPoints = getTotalPoints(playersToRender) - transferCosts;
-
-    let result = {
-        [`${name}picks`]: data.picks,
-        [`${name}addSeparator`]: !isBenchBoostActive,
-        [`${name}totalPoints`]: totalPoints,
-        [`${name}minusPoints`]: -transferCosts,
-        [`${name}playersToRender`]: playersToRender
-    };
-    
     return result;
 }
 

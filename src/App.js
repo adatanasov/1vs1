@@ -41,8 +41,6 @@ class App extends Component {
             showMatches: false,
             footballPlayers: null,
             teams: null,
-            liveStats: null,
-            fixtures: null,
             player1: playerId,
             player2: null,
             inProgress: null,
@@ -107,19 +105,17 @@ class App extends Component {
             this.setState({inProgress: inProgress, showMatches: true});
 
             if (inProgress && this.state.currentGameweek === this.state.gameweek) {
-                for (let i = 0; i < leagueData.matches.length; i++) {
-                    let m = leagueData.matches[i];
-                    
-                    let player1Data = await PointsCalculator.GetPicksData(
-                        m.entry_1_entry, m.entry_1_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams);
-                    let player1TotalPoints = player1Data[`${m.entry_1_entry}totalPoints`];
-                    m.entry_1_points = player1TotalPoints;
-
-                    let player2Data = await PointsCalculator.GetPicksData(
-                        m.entry_2_entry, m.entry_2_entry, this.state.gameweek, this.state.footballPlayers, this.state.teams);
-                    let player2TotalPoints = player2Data[`${m.entry_2_entry}totalPoints`];
-                    m.entry_2_points = player2TotalPoints;
-                }
+                let players = leagueData.matches.map(m => {
+                    return [m.entry_1_entry, m.entry_2_entry];
+                }).flat().map(id => {
+                    return {id: id, name: id};
+                });
+                let playersData = await PointsCalculator.GetMultiplePicksData(
+                    players, this.state.gameweek, this.state.footballPlayers, this.state.teams);
+                leagueData.matches.forEach(m => {
+                    m.entry_1_points = playersData.find(r => r.id === m.entry_1_entry)[`${m.entry_1_entry}totalPoints`];
+                    m.entry_2_points = playersData.find(r => r.id === m.entry_2_entry)[`${m.entry_2_entry}totalPoints`];
+                });
             }
         } else {
             this.setState({showMatches: false});
@@ -134,9 +130,7 @@ class App extends Component {
     async handleGameWeekChange(gameweek) {
         this.showLoader();
 
-        let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
-        let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
-        this.setState({liveStats: liveStats, fixtures: fixtures, gameweek: gameweek});
+        this.setState({gameweek: gameweek});
 
         if (this.state.selectedLeague?.ish2h && this.state.showMatches) {
             this.handleLeagueChange(this.state.selectedLeague)
@@ -158,7 +152,6 @@ class App extends Component {
     }
 
     refresh() {
-        //this.handleGameWeekChange(this.state.gameweek);
         this.setState({seed: new Date().getTime()});
     }
 
@@ -185,7 +178,7 @@ class App extends Component {
                     visible={this.state.isLoading}
                     className="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">v.1.22</div>}
+                    <div className="version">v.1.23</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
@@ -207,8 +200,7 @@ class App extends Component {
                         inProgress={this.state.inProgress}
                         openMatch={(p1,p2) => this.openMatch(p1,p2)}
                         refreshAll={() => this.refreshAll()} />}
-                {this.state.playerId && this.state.gameweek && 
-                    this.state.liveStats && this.state.fixtures &&
+                {this.state.playerId && this.state.gameweek &&
                     this.state.rankings && !this.state.showMatches &&
                     <PlayersDetails
                         player1={this.state.player1}
@@ -217,8 +209,6 @@ class App extends Component {
                         gameweek={this.state.gameweek}
                         currentGameweek={this.state.currentGameweek}
                         rankings={this.state.rankings}
-                        liveStats={this.state.liveStats}
-                        fixtures={this.state.fixtures}
                         footballPlayers={this.state.footballPlayers}
                         teams={this.state.teams}
                         ish2h={this.state.selectedLeague.ish2h}

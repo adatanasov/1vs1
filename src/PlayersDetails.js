@@ -42,16 +42,10 @@ class PlayersDetails extends Component {
     }
 
     componentDidMount() {
-        // console.log('details mount');
-        // console.log(this.props.liveStats.filter(p => p.id === 308));
-        if (this.props.currentGameweek >= this.props.gameweek) {            
-            if (this.props.player1) {
-                this.fillPlayerPicksForEvent('player1', this.props.player1, this.props.gameweek);
-            }
-
-            if (this.props.player2) {
-                this.fillPlayerPicksForEvent('player2', this.props.player2, this.props.gameweek);
-            }
+        if (this.props.gameweek <= this.props.currentGameweek) {
+            this.showLoader();
+            this.getPicksData(this.props.player1, this.props.player2, this.props.gameweek);
+            this.hideLoader();
         }
     }
 
@@ -59,17 +53,22 @@ class PlayersDetails extends Component {
         this.props.handlePlayerChange(name, playerId);
     }
 
-    async fillPlayerPicksForEvent(name, playerId, event) {
-        this.showLoader();
+    async getPicksData(player1, player2, gameweek) {
+        let players = [];
 
-        if (this.props.footballPlayers && this.props.teams && this.props.liveStats && this.props.fixtures) {
-            let data = await PointsCalculator.GetPicksData(
-                name, playerId, event, this.props.footballPlayers, this.props.teams);
-            this.setState(data);
-            // console.log(data);
+        if (player1) {
+            players.push({id: player1, name: 'player1'});
         }
 
-        this.hideLoader();
+        if (player2) {
+            players.push({id: player2, name: 'player2'});
+        }
+
+        if (players.some(p => p)) {
+            let playersData = await PointsCalculator.GetMultiplePicksData(
+                players, gameweek, this.props.footballPlayers, this.props.teams);
+            playersData.forEach(d => this.setState(d));
+        }
     }
 
     render() {
