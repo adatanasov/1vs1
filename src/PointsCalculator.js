@@ -1,17 +1,19 @@
 import * as FantasyAPI from './FantasyAPI';
+import * as CacheService from './CacheService';
 
 export async function GetMultiplePicksData(picks, gameweek, footballPlayers, teams) {
     let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
     let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
     let result = [];
 
+    //TODO: try to call this async for all to save time
     for (let i = 0; i < picks.length; i++) {
         const pick = picks[i];
         
         let name = pick.name;
         let playerId = pick.id;
-        //TODO: try to call this async for all to save time
-        let data = await FantasyAPI.getPlayerPicksForEvent(playerId, gameweek);
+        let cacheKey = `${gameweek}-${playerId}`;
+        let data = await CacheService.getIfExist(cacheKey, FantasyAPI.getPlayerPicksForEvent, playerId, gameweek);
 
         let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
         let transferCosts = data.entry_history.event_transfers_cost;
