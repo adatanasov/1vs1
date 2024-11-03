@@ -97,12 +97,16 @@ function getCurrentMatchesBonus(fixtures) {
         fi.stats.find(st => st.identifier === 'bonus').a.length === 0);
     let bonuses = matchesWithoutBonus.map(fi => {
         let allBonuses = [...fi.stats.find(st => st.identifier === 'bps').h, ...fi.stats.find(st => st.identifier === 'bps').a];
+        if (!allBonuses || allBonuses.length === 0) {
+            return [];
+        }
+
         allBonuses.sort(function (a, b) {
             return b.value - a.value;
         });
 
         let points = 3;
-        allBonuses[0].points = points;
+        allBonuses[0].points = points; 
         let playersWithBonus3 = 1;
         let playersWithBonus = 1;
         let result = [allBonuses[0]];
