@@ -1,6 +1,6 @@
 {
   "name": "1vs1",
-  "version": "1.23",
+  "version": "1.24",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.6",
