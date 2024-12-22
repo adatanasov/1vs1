@@ -4,12 +4,10 @@ import * as CacheService from './CacheService';
 export async function GetMultiplePicksData(picks, gameweek, footballPlayers, teams) {
     let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
     let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
+    let fixtureCacheKey = Date.now() + (60 * 1000);
     let result = [];
 
-    //TODO: try to call this async for all to save time
-    for (let i = 0; i < picks.length; i++) {
-        const pick = picks[i];
-        
+    await Promise.all(picks.map(async pick => {
         let name = pick.name;
         let playerId = pick.id;
         let cacheKey = `${gameweek}-${playerId}`;
@@ -22,7 +20,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
         let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
 
-        let playersToRender = data.picks.map(pick => {
+        let playersToRender = await Promise.all(data.picks.map(async pick => {
             let actualPlayer = footballPlayers.find(pl => pl.id === pick.element);
             let actualStat = liveStats.find(pl => pl.id === pick.element);
             
@@ -47,10 +45,11 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
                 multiplier: pick.multiplier,
                 position: pick.position,
                 type: actualPlayer.element_type, // 1- G, 2 - D, 3 - M, 4 - F
-                chance: actualPlayer.chance_of_playing_this_round ?? 100
+                chance: actualPlayer.chance_of_playing_this_round ?? 100,
+                optaCode: 'p' + actualPlayer.code
             };
     
-            decoratedPick.canPlay = canPickPlay(decoratedPick, fixtures);
+            decoratedPick.canPlay = await canPickPlay(decoratedPick, fixtures, fixtureCacheKey);
     
             let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
             if (bonus) {
@@ -59,7 +58,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
             }
     
             return decoratedPick;
-        });
+        }));
     
         if (!isBenchBoostActive) {
             setReserves(playersToRender, 11);
@@ -88,7 +87,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         };
         
         result.push(currentResult);
-    }
+    }));
 
     return result;
 }
@@ -166,16 +165,26 @@ function getOpposingTeamName(fixtures, teams, teamId) {
     }
 }
 
-function canPickPlay(decoratedPick, fixtures) {
+async function canPickPlay(decoratedPick, fixtures, fixtureCacheKey) {
     const pickHasMatch = decoratedPick.hasMatch;
     let canPlay = pickHasMatch;
 
     if (pickHasMatch) {
-        let matches = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
-        let areAllFinished = !matches.some(m => m.finished_provisional === false);
+        let pickFixtures = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
+        let unfinishedPickFixtures = pickFixtures.filter(m => m.finished_provisional === false);
+        let areAllFinished = !unfinishedPickFixtures.some(f => f);
 
         if (areAllFinished) {
             canPlay = decoratedPick.hasPlayed;
+        } else if (pickFixtures.length === 1 && unfinishedPickFixtures.length === 1) {
+            let fixtureId = unfinishedPickFixtures[0].pulse_id;
+            //TODO this is called once for every pick after cache is expired; should be once for fixture
+            let pulseFixturePlayerIds = await CacheService.getFixtureIfExist(fixtureId, fixtureCacheKey, FantasyAPI.getFixturePlayers, fixtureId);
+
+            if (pulseFixturePlayerIds.some(p => p)) {                
+                let pickInLineUpOrSubs = pulseFixturePlayerIds.some(p => p === decoratedPick.optaCode);
+                canPlay = pickInLineUpOrSubs;
+            }
         }
     }
 
