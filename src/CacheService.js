@@ -22,24 +22,3 @@ export async function getIfExist(key, callback, playerId, gameweek) {
 
     return data;
 }
-
-export async function getFixtureIfExist(key, expires, callback, fixtureId) {
-    let item = get(key);
-    let data = null;
-
-    if (item && item.expires) {
-        if (Date.now() - item.expires > 0) {
-            localStorage.removeItem(key);
-            item = null;
-        } else {
-            data = item.data;
-        }
-    }
-
-    if (data === null) {
-        data = await callback(fixtureId);
-        set(key, {expires: expires, data: data});
-    }
-
-    return data;
-}
