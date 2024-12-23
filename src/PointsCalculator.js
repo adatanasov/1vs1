@@ -178,7 +178,6 @@ function getOpposingTeamName(fixtures, teams, teamId) {
 }
 
 function canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps) {
-    console.log(unfinishedFixturesLineUps);
     const pickHasMatch = decoratedPick.hasMatch;
     let canPlay = pickHasMatch;
 
