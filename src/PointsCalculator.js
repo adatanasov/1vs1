@@ -29,6 +29,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         let transferCosts = data.entry_history.event_transfers_cost;
         let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
         let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
+        // let isManagerActive = data.active_chip && data.active_chip === 'manager';
         let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
         let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
 
@@ -206,7 +207,7 @@ function canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps) {
 }
 
 function setReserves(playersToRender, playersToTake) {        
-    for (let i = playersToTake; i < playersToRender.length; i++) {
+    for (let i = playersToTake; i < 15; i++) {
         playersToRender[i].isReserve = true;                    
     }
 }
