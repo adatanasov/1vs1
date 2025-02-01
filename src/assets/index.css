@@ -89,7 +89,7 @@ body {
 .players-info {
   display: flex;
   flex-direction: row;
-  height: 545px;
+  min-height: 545px;
 }
 
 .player-info {
@@ -208,6 +208,11 @@ body {
 
 .type4 {
   background-color: rgba(233, 0, 82, 0.9);
+  color: white;
+} 
+
+.type5 {
+  background-color: rgba(0, 0, 0, 1);
   color: white;
 }
 
