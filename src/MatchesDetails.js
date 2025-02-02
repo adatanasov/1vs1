@@ -25,7 +25,7 @@ class MatchesDetails extends Component {
             <div className={"match-row" + (this.props.playerId === m.entry_1_entry || this.props.playerId === m.entry_2_entry ? " own-match" : "") }
                 key={m.id}
                 onClick={() => this.openMatch(m.entry_1_entry, m.entry_2_entry)}>
-                <span className="match-player text-right pr10">
+                <span className="match-player text-right pr10 pl10">
                     <div className="text-ellipsis">{m.entry_1_name}</div>
                     <div className="text-ellipsis">{m.entry_1_player_name}</div>
                 </span>

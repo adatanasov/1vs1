@@ -4,9 +4,8 @@ body {
   padding: 0px;
 }
 
-.app {    
-  margin: 10px;
-  max-width: 424px;
+.app {
+  max-width: 99%;
 }
 
 .details-wrapper {
@@ -49,6 +48,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .back {
@@ -60,6 +60,7 @@ body {
   font-size: 1.3rem;
   font-weight: 400;
   margin-top: 10px;
+  display: flex;
 }
 
 .change-entry {
@@ -71,8 +72,7 @@ body {
   
   background-color: white;
   background-image: url('close.svg');
-  display: inline-block;
-  vertical-align: top;
+  background-repeat: no-repeat;
 }
 
 .league-select {
@@ -306,12 +306,11 @@ body {
 
 .match-player {
   display: inline-block;
-  min-width: 32%;
-  max-width: 32%;
+  min-width: 31%;
+  max-width: 31%;
   overflow: hidden;
   line-height: 20px;
   vertical-align: bottom;
-  /* color: rgb(55, 0, 60); */
   font-size: 13px;
   font-weight: 400;
 }
