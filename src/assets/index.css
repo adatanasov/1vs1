@@ -306,7 +306,8 @@ body {
 
 .match-player {
   display: inline-block;
-  width: 33%;
+  min-width: 32%;
+  max-width: 32%;
   overflow: hidden;
   line-height: 20px;
   vertical-align: bottom;
