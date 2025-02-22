@@ -57,12 +57,12 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
                 isTripleCaptainActive: isTripleCaptainActive,
                 multiplier: pick.multiplier,
                 position: pick.position,
-                type: actualPlayer.element_type, // 1- G, 2 - D, 3 - M, 4 - F
+                type: actualPlayer.element_type, // 1- GOAL, 2 - DEF, 3 - MID, 4 - FORW, 5 - MANAGER
                 chance: actualPlayer.chance_of_playing_this_round ?? 100,
                 optaCode: 'p' + actualPlayer.code
             };
     
-            decoratedPick.canPlay = canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps);
+            decoratedPick.canPlay = decoratedPick.type === 5 ? true : canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps);
     
             let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
             if (bonus) {
