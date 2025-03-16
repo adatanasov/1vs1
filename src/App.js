@@ -178,7 +178,7 @@ class App extends Component {
                     visible={this.state.isLoading}
                     className="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">v.1.54</div>}
+                    <div className="version">v.1.55</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 

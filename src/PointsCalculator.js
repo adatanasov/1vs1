@@ -257,7 +257,7 @@ function canChangePlayer(playersToRender, titularType, reserveType) {
         return true;
     } 
     
-    let currentPlayers = playersToRender.filter(pl => (!pl.isReserve && !pl.goesOut) || (pl.isReserve && pl.goesOut));
+    let currentPlayers = playersToRender.filter(pl => (!pl.isReserve && !pl.goesOut) || (pl.isReserve && pl.goesIn));
     let remainingFromType = currentPlayers.filter(pl => pl.type === titularType).length;
 
     if (titularType === 2 && remainingFromType <= 3) {
