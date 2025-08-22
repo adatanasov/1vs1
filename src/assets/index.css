@@ -171,6 +171,10 @@ body {
   align-items: center;
 }
 
+.player-pick.live {
+  border-left: 3px solid white;
+}
+
 .player-pick.separator {
   border-bottom: 2px solid black;
   margin-bottom: 2px;
@@ -189,6 +193,7 @@ body {
   padding: 3px 7px 3px 2px;
   border-radius: 5px;
   
+  margin-left: 3px;
 }  
 
 .type1 {

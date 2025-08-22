@@ -5,7 +5,7 @@ function PlayerPicks(props) {
     const leftIconSvg = (<svg x="0px" y="0px" viewBox="0 0 1000 1000" enableBackground="new 0 0 1000 1000" ><g><g transform="translate(0.000000,511.000000) scale(0.100000,-0.100000)"><path d="M4573.9,5006.6c-1148.9-116.7-2173.2-587.3-2984-1372.4C-344,1763.5-403.4-1329.2,1459.4-3273c1906.3-1989.3,5064.3-2026.9,7010.1-83.1c739.6,735.6,1204.3,1649.2,1386.2,2719c43.5,257.1,59.3,984.8,27.7,1271.5c-112.7,1026.3-520.1,1949.8-1214.2,2742.7c-622.9,711.9-1530.5,1261.6-2463.9,1495c-413.3,102.8-632.8,128.5-1117.3,136.4C4848.8,5010.5,4617.4,5010.5,4573.9,5006.6z M6565.2,3482c302.5-302.5,549.7-557.6,549.7-569.5c0-9.9-628.8-648.6-1398.1-1417.8l-1400-1400l1409.9-1409.9l1407.9-1408l-563.6-563.6l-563.6-563.6L4034-1876.9L2062.5,94.6l1967.6,1967.6c1081.7,1081.7,1971.5,1967.6,1977.5,1967.6S6264.6,3782.5,6565.2,3482z"/></g></g></svg>);
 
     let picks = props.picks.map(pick => (
-        <li key={pick.id} className={`player-pick ${props.addSeparator && pick.position === 11 ? 'separator' : ''}`}>
+        <li key={pick.id} className={`player-pick ${props.addSeparator && pick.position === 11 ? 'separator' : ''} ${pick.hasUnfinishedFixture ? 'live' : ''}`}>
             <span className={`player-pick-name ${pick.isReserve ? 'reserve' : ''} type${pick.type}`}>
                 <span className={`chance chance-${pick.chance}`}></span>
                 {pick.name}

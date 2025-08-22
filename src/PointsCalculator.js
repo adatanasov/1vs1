@@ -29,7 +29,6 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         let transferCosts = data.entry_history.event_transfers_cost;
         let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
         let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
-        // let isManagerActive = data.active_chip && data.active_chip === 'manager';
         let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
         let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
 
@@ -46,6 +45,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
                 bonus: actualStat.stats.bonus,
                 hasMatch: playingTeams.includes(actualPlayer.team),
                 hasMatchStarted: fixtures.some(fi => fi.started && (fi.team_h === actualPlayer.team || fi.team_a === actualPlayer.team)),
+                hasUnfinishedFixture: null,
                 opposingTeam: getOpposingTeamName(fixtures, teams, actualPlayer.team),
                 canPlay: null,
                 hasPlayed: actualStat.stats.minutes > 0 || actualStat.stats.yellow_cards > 0 || actualStat.stats.red_cards > 0,
@@ -63,6 +63,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
             };
     
             decoratedPick.canPlay = decoratedPick.type === 5 ? true : canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps);
+            decoratedPick.hasUnfinishedFixture = hasUnfinishedFixture(decoratedPick, fixtures, unfinishedFixturesLineUps);
     
             let bonus = currentMatchesBonus.find(el => el.element === decoratedPick.id);
             if (bonus) {
@@ -189,6 +190,34 @@ function canPickPlay(decoratedPick, fixtures, unfinishedFixturesLineUps) {
 
         if (areAllFinished) {
             canPlay = decoratedPick.hasPlayed;
+        } else if (pickFixtures.length === 1 && unfinishedPickFixtures.length === 1) {
+            let fixtureId = unfinishedPickFixtures[0].pulse_id;
+
+            if (unfinishedFixturesLineUps.some(f => f.id === fixtureId)) {
+                let pickInLineUpOrSubs = unfinishedFixturesLineUps
+                .find(f => f.id === fixtureId)
+                .lineup
+                .some(p => p === decoratedPick.optaCode);
+
+                canPlay = pickInLineUpOrSubs;
+            }
+        }
+    }
+
+    return canPlay;
+}
+
+function hasUnfinishedFixture(decoratedPick, fixtures, unfinishedFixturesLineUps) {
+    const pickHasMatch = decoratedPick.hasMatch;
+    let canPlay = pickHasMatch;
+
+    if (pickHasMatch) {
+        let pickFixtures = fixtures.filter(fi => fi.team_h === decoratedPick.teamId || fi.team_a === decoratedPick.teamId);
+        let unfinishedPickFixtures = pickFixtures.filter(m => m.finished_provisional === false);
+        let areAllFinished = !unfinishedPickFixtures.some(f => f);
+
+        if (areAllFinished) {
+            canPlay = false;
         } else if (pickFixtures.length === 1 && unfinishedPickFixtures.length === 1) {
             let fixtureId = unfinishedPickFixtures[0].pulse_id;
 
