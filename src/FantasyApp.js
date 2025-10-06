@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import Loader from "react-loader-spinner";
+import { Oval } from "react-loader-spinner";
 
 import EntryForm from './components/EntryForm';
 import PlayerName from './components/PlayerName';
@@ -86,32 +86,32 @@ class FantasyApp extends Component {
             player1: data.id
         });
 
-        this.handleGameWeekChange(this.state.gameweek);
+        this.handleGameWeekChange(data.current_event);
     }
 
     handlePlayerReset() {
         this.setState({playerId: null, playerName: null, playerInfo: null, leagues: null});
     }
 
-    async handleLeagueChange(league) {
+    async handleLeagueChange(league, gameweek) {
         this.showLoader();
         league.ish2h = league.scoring === 'h';
         this.setState({selectedLeague: league});
 
-        let leagueData = await FantasyAPI.getLeagueData(league.id, league.ish2h, this.state.gameweek);
+        let leagueData = await FantasyAPI.getLeagueData(league.id, league.ish2h, gameweek);
 
         if (league.ish2h && leagueData.matches) {
             let inProgress = leagueData.matches[0].entry_1_total === 0 && leagueData.matches[0].entry_2_total === 0;
             this.setState({inProgress: inProgress, showMatches: true});
 
-            if (inProgress && this.state.currentGameweek === this.state.gameweek) {
+            if (inProgress && this.state.currentGameweek === gameweek) {
                 let players = leagueData.matches.map(m => {
                     return [m.entry_1_entry, m.entry_2_entry];
                 }).flat().map(id => {
                     return {id: id, name: id};
                 });
                 let playersData = await PointsCalculator.GetMultiplePicksData(
-                    players, this.state.gameweek, this.state.footballPlayers, this.state.teams);
+                    players, gameweek, this.state.footballPlayers, this.state.teams);
                 leagueData.matches.forEach(m => {
                     m.entry_1_points = playersData.find(r => r.id === m.entry_1_entry)[`${m.entry_1_entry}totalPoints`];
                     m.entry_2_points = playersData.find(r => r.id === m.entry_2_entry)[`${m.entry_2_entry}totalPoints`];
@@ -129,11 +129,11 @@ class FantasyApp extends Component {
 
     async handleGameWeekChange(gameweek) {
         this.showLoader();
-
+        
         this.setState({gameweek: gameweek});
 
         if (this.state.selectedLeague?.ish2h && this.state.showMatches) {
-            this.handleLeagueChange(this.state.selectedLeague)
+            this.handleLeagueChange(this.state.selectedLeague, gameweek)
         }
 
         this.hideLoader();
@@ -156,7 +156,7 @@ class FantasyApp extends Component {
     }
 
     refreshAll() {
-        this.handleLeagueChange(this.state.selectedLeague);
+        this.handleLeagueChange(this.state.selectedLeague, this.state.gameweek);
     }
 
     showLoader() {
@@ -170,15 +170,15 @@ class FantasyApp extends Component {
     render() {
         return (
             <div className="app">
-                <Loader
-                    type="Oval"
-                    color="#37003C"
-                    height={80}
-                    width={80}
+                <Oval
                     visible={this.state.isLoading}
-                    className="loader" />
+                    height="80"
+                    width="80"
+                    color="#37003C"
+                    secondaryColor="#37003C"
+                    wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">v.1.57</div>}
+                    <div className="version">v.1.58</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
@@ -187,7 +187,7 @@ class FantasyApp extends Component {
                 {this.state.playerId && this.state.leagues && 
                     <LeagueSelect 
                         leagues={this.state.leagues} 
-                        onChange={(d) => this.handleLeagueChange(d)} />}
+                        onChange={(d) => this.handleLeagueChange(d, this.state.gameweek)} />}
                 {this.state.gameweek && this.state.rankings &&
                     <GameWeekSelect 
                         currentEvent={this.state.currentGameweek} 
