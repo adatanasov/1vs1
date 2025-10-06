@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Loader from "react-loader-spinner";
 
-import EntryForm from './EntryForm';
-import PlayerName from './PlayerName';
-import LeagueSelect from './LeagueSelect';
-import PlayersDetails from './PlayersDetails';
-import MatchesDetails from './MatchesDetails';
-import GameWeekSelect from './GameWeekSelect';
-import * as FantasyAPI from './FantasyAPI';
-import * as PointsCalculator from './PointsCalculator';
+import EntryForm from './components/EntryForm';
+import PlayerName from './components/PlayerName';
+import LeagueSelect from './components/LeagueSelect';
+import PlayersDetails from './components/PlayersDetails';
+import MatchesDetails from './components/MatchesDetails';
+import GameWeekSelect from './components/GameWeekSelect';
+import * as FantasyAPI from './services/FantasyAPI';
+import * as PointsCalculator from './services/PointsCalculator';
 
-class App extends Component {
+class FantasyApp extends Component {
     constructor(props) {
         super(props);
 
@@ -178,7 +178,7 @@ class App extends Component {
                     visible={this.state.isLoading}
                     className="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">v.1.56</div>}
+                    <div className="version">v.1.57</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
@@ -222,4 +222,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default FantasyApp;
