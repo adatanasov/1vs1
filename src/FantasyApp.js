@@ -178,7 +178,7 @@ class FantasyApp extends Component {
                     secondaryColor="#37003C"
                     wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">v.1.58</div>}
+                    <div className="version">v.1.59</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 

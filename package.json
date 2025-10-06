@@ -1,17 +1,17 @@
 {
   "name": "1vs1",
-  "version": "1.58",
+  "version": "1.59",
   "private": true,
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-loader-spinner": "^7.0.3",
-    "react-scripts": "^5.0.1"
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-loader-spinner": "7.0.3",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
+    "predeploy": "npm run build",
     "build": "react-scripts build",
     "eject": "react-scripts eject"
   },
@@ -33,7 +33,7 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "6.3.0"
   },
   "homepage": "https://adatanasov.github.io/1vs1"
 }
