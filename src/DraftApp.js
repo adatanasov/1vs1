@@ -8,6 +8,7 @@ import PlayersDetails from './components/PlayersDetails';
 import MatchesDetails from './components/MatchesDetails';
 import GameWeekSelect from './components/GameWeekSelect';
 import * as FantasyAPI from './services/FantasyAPI';
+import * as DraftAPI from './services/DraftAPI';
 import * as PointsCalculator from './services/PointsCalculator';
 
 class DraftApp extends Component {
@@ -53,15 +54,15 @@ class DraftApp extends Component {
             this.handlePlayerId(this.state.playerId);
         }
 
-        let data = await FantasyAPI.getPlayersAndTeams();
-        this.setState(data);
+        // let data = await FantasyAPI.getPlayersAndTeams();
+        // this.setState(data);
     }
 
     async handlePlayerId(id) {
         this.showLoader();
         localStorage.setItem("PlayerId", id);
 
-        let entryData = await FantasyAPI.getEntryById(id);
+        let entryData = await DraftAPI.getEntryById(id);
         this.handlePlayerInfo(entryData);
         
         this.hideLoader(entryData);
@@ -80,13 +81,13 @@ class DraftApp extends Component {
             playerId: data.id,
             playerName: playerName, 
             playerInfo: data, 
-            currentGameweek: data.current_event,
-            gameweek: data.current_event,
+            //currentGameweek: data.current_event,
+            //gameweek: data.current_event,
             leagues: data.leagues,
             player1: data.id
         });
 
-        this.handleGameWeekChange(data.current_event);
+        //this.handleGameWeekChange(data.current_event);
     }
 
     handlePlayerReset() {
@@ -178,7 +179,7 @@ class DraftApp extends Component {
                     secondaryColor="#37003C"
                     wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">draft v.1.0.1</div>}
+                    <div className="version">draft v.1.0.2</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
