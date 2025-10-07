@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-draft": "cross-env REACT_APP_SETUP=draft react-scripts start",
     "deploy": "gh-pages -d build",
     "predeploy": "npm run build",
     "build": "react-scripts build",
@@ -33,6 +34,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "10.1.0",
     "gh-pages": "6.3.0"
   },
   "homepage": "https://adatanasov.github.io/1vs1"
