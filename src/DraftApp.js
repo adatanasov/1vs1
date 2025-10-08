@@ -203,7 +203,7 @@ class DraftApp extends Component {
                     secondaryColor="#37003C"
                     wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">draft v.1.0.2</div>}
+                    <div className="version">draft v.1.1.0</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
