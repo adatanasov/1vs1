@@ -7,7 +7,6 @@ import LeagueSelect from './components/LeagueSelect';
 import PlayersDetails from './components/PlayersDetails';
 import MatchesDetails from './components/MatchesDetails';
 import GameWeekSelect from './components/GameWeekSelect';
-import * as FantasyAPI from './services/FantasyAPI';
 import * as DraftAPI from './services/DraftAPI';
 import * as PointsCalculator from './services/PointsCalculator';
 
@@ -51,21 +50,25 @@ class DraftApp extends Component {
 
     async componentDidMount() {
         if (this.state.playerId) {
-            this.handlePlayerId(this.state.playerId);
+            this.showLoader();
+
+            localStorage.setItem("PlayerId", this.state.playerId);
+
+            let data = await DraftAPI.getPlayersAndTeams();
+            this.setState(data);
+            this.setState({gameweek: data.currentGameweek});
+
+            let entryData = await DraftAPI.getEntryById(this.state.playerId);
+            this.handlePlayerInfo(entryData);
+            this.loadPlayerLeague(entryData.leagueId);
+
+            this.hideLoader(entryData);
         }
 
-        // let data = await FantasyAPI.getPlayersAndTeams();
-        // this.setState(data);
     }
 
-    async handlePlayerId(id) {
-        this.showLoader();
-        localStorage.setItem("PlayerId", id);
-
-        let entryData = await DraftAPI.getEntryById(id);
-        this.handlePlayerInfo(entryData);
-        
-        this.hideLoader(entryData);
+    handlePlayerReset() {
+        this.setState({playerId: null, playerName: null, playerInfo: null, leagues: null});
     }
 
     handlePlayerInfo(data) {      
@@ -81,48 +84,63 @@ class DraftApp extends Component {
             playerId: data.id,
             playerName: playerName, 
             playerInfo: data, 
-            //currentGameweek: data.current_event,
-            //gameweek: data.current_event,
-            leagues: data.leagues,
             player1: data.id
         });
-
-        //this.handleGameWeekChange(data.current_event);
     }
 
-    handlePlayerReset() {
-        this.setState({playerId: null, playerName: null, playerInfo: null, leagues: null});
+    async loadPlayerLeague(leagueId) {
+        let league = await DraftAPI.getLeagueById(leagueId);
+        league.matches.forEach(m => {
+            let entry1 = league.league_entries.find(e => e.id === m.league_entry_1);
+            m.entry_1_name = entry1.entry_name;
+            m.entry_1_player_name = `${entry1.player_first_name} ${entry1.player_last_name}`;
+            m.entry_1_entry = entry1.entry_id;
+            m.entry_1_points = m.league_entry_1_points;
+
+            let entry2 = league.league_entries.find(e => e.id === m.league_entry_2);
+            m.entry_2_name = entry2.entry_name;
+            m.entry_2_player_name = `${entry2.player_first_name} ${entry2.player_last_name}`;
+            m.entry_2_entry = entry2.entry_id;
+            m.entry_2_points = m.league_entry_2_points;
+
+            m.id = `${m.league_entry_1}-${m.league_entry_2}`;
+        });
+
+        let currentId = league.league_entries.find(e => e.entry_id === this.state.playerId).id;
+        this.setState({rankings: league.standings, entryId: currentId});
+
+        await this.handleLeagueChange(league.league, league.matches, this.state.currentGameweek);
     }
 
-    async handleLeagueChange(league, gameweek) {
+    async handleLeagueChange(league, matches, gameweek) {
         this.showLoader();
         league.ish2h = league.scoring === 'h';
-        this.setState({selectedLeague: league});
+        this.setState({selectedLeague: league, leagues: [league], allMatches: matches});
 
-        let leagueData = await FantasyAPI.getLeagueData(league.id, league.ish2h, gameweek);
-
-        if (league.ish2h && leagueData.matches) {
-            let inProgress = leagueData.matches[0].entry_1_total === 0 && leagueData.matches[0].entry_2_total === 0;
+        if (league.ish2h && matches) {
+            let currentMatches = matches.filter(m => m.event === gameweek);
+            let inProgress = currentMatches[0].started === true && currentMatches[0].finished === false;
             this.setState({inProgress: inProgress, showMatches: true});
 
             if (inProgress && this.state.currentGameweek === gameweek) {
-                let players = leagueData.matches.map(m => {
-                    return [m.entry_1_entry, m.entry_2_entry];
+                let players = currentMatches.map(m => {
+                    return [m.league_entry_1, m.league_entry_2];
                 }).flat().map(id => {
                     return {id: id, name: id};
                 });
                 let playersData = await PointsCalculator.GetMultiplePicksData(
-                    players, gameweek, this.state.footballPlayers, this.state.teams);
-                leagueData.matches.forEach(m => {
+                    players, gameweek, this.state.footballPlayers, this.state.teams, true, DraftAPI);
+                currentMatches.forEach(m => {
                     m.entry_1_points = playersData.find(r => r.id === m.entry_1_entry)[`${m.entry_1_entry}totalPoints`];
                     m.entry_2_points = playersData.find(r => r.id === m.entry_2_entry)[`${m.entry_2_entry}totalPoints`];
                 });
             }
+            
+            this.setState({matches: currentMatches});
         } else {
             this.setState({showMatches: false});
         }
 
-        this.setState(leagueData);
         this.setState({player1: this.state.playerId, player2: null});
 
         this.hideLoader();
@@ -134,7 +152,7 @@ class DraftApp extends Component {
         this.setState({gameweek: gameweek});
 
         if (this.state.selectedLeague?.ish2h && this.state.showMatches) {
-            this.handleLeagueChange(this.state.selectedLeague, gameweek)
+            this.handleLeagueChange(this.state.selectedLeague, this.state.allMatches, gameweek);
         }
 
         this.hideLoader();
@@ -217,7 +235,10 @@ class DraftApp extends Component {
                         hideLoader={() => this.hideLoader()}
                         backToLeague={() => this.backToLeague()}
                         refresh={() => this.refresh()}
-                        handlePlayerChange={(n,id) => this.handlePlayerChange(n,id)} />} 
+                        handlePlayerChange={(n,id) => this.handlePlayerChange(n,id)} 
+                        isDraft={true}
+                        api={DraftAPI}
+                        />} 
             </div>
         );
     }

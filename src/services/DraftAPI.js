@@ -14,6 +14,7 @@ export async function getEntryById(id) {
     })
     .then(data => {
         data.entry.isSuccess = true;
+        data.entry.leagueId = data.entry.league_set[0];
         return data.entry;
     })
     .catch(error => {
@@ -23,5 +24,49 @@ export async function getEntryById(id) {
                 error: body
             };
         });          
+    });
+}
+
+export async function getPlayersAndTeams() {
+    return fetch(`${url}/bootstrap-static`)
+    .then(response => response.json())
+    .then(data => {
+        return {
+            footballPlayers: data.elements, 
+            teams: data.teams,
+            currentGameweek: data.events.current
+        };
+    });
+}
+
+export async function getLeagueById(id) {
+    return fetch(`${url}/league/${id}/details`)
+    .then(response => response.json())
+    .then(data => {
+        return data;
+    });
+}
+
+export async function getGameweekFootballersData(gameweek) {
+    return fetch(`${url}/event/${gameweek}/live`)
+    .then(response => response.json())
+    .then(liveData => {
+        return liveData.elements;
+    }); 
+}
+
+export async function getGameweekFixturesData(gameweek) {
+    return fetch(`${url}/event/${gameweek}/live`)
+    .then(response => response.json())
+    .then(liveData => {
+        return liveData.fixtures;
+    }); 
+}
+
+export async function getPlayerPicksForEvent(playerId, event) {
+    return fetch(`${url}/entry/${playerId}/event/${event}`)
+    .then(response => response.json())
+    .then(data => {
+        return data;
     });
 }

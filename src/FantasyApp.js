@@ -111,7 +111,7 @@ class FantasyApp extends Component {
                     return {id: id, name: id};
                 });
                 let playersData = await PointsCalculator.GetMultiplePicksData(
-                    players, gameweek, this.state.footballPlayers, this.state.teams);
+                    players, gameweek, this.state.footballPlayers, this.state.teams, false, FantasyAPI);
                 leagueData.matches.forEach(m => {
                     m.entry_1_points = playersData.find(r => r.id === m.entry_1_entry)[`${m.entry_1_entry}totalPoints`];
                     m.entry_2_points = playersData.find(r => r.id === m.entry_2_entry)[`${m.entry_2_entry}totalPoints`];
@@ -216,7 +216,9 @@ class FantasyApp extends Component {
                         hideLoader={() => this.hideLoader()}
                         backToLeague={() => this.backToLeague()}
                         refresh={() => this.refresh()}
-                        handlePlayerChange={(n,id) => this.handlePlayerChange(n,id)} />} 
+                        handlePlayerChange={(n,id) => this.handlePlayerChange(n,id)}
+                        isDraft={false}
+                        api={FantasyAPI} />}                        
             </div>
         );
     }

@@ -66,7 +66,7 @@ class PlayersDetails extends Component {
 
         if (players.some(p => p)) {
             let playersData = await PointsCalculator.GetMultiplePicksData(
-                players, gameweek, this.props.footballPlayers, this.props.teams);
+                players, gameweek, this.props.footballPlayers, this.props.teams, this.props.isDraft, this.props.api);
             playersData.forEach(d => this.setState(d));
         }
     }

@@ -21,6 +21,14 @@ class LeagueSelect extends Component {
     }
   
     render() {
+        if (this.state.leagues.length === 1 && this.state.leagues[0]?.drafts.length > 0) {
+            return (
+                <select value={this.state.leagues[0].name} disabled className="league-select">
+                    <option value={this.state.leagues[0].name}>{this.state.leagues[0].name}</option>
+                </select>
+            );
+        }
+
         const classicLeagues = this.state.leagues.classic && this.state.leagues.classic.filter(le => le.league_type === 'x');
         const h2hLeagues = this.state.leagues.h2h;
         const globalLeagues = this.state.leagues.classic.filter(le => le.league_type === 's');

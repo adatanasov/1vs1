@@ -1,16 +1,15 @@
-import * as FantasyAPI from './FantasyAPI';
 import * as CacheService from './CacheService';
 
-export async function GetMultiplePicksData(picks, gameweek, footballPlayers, teams) {
-    let liveStats = await FantasyAPI.getGameweekFootballersData(gameweek);
-    let fixtures = await FantasyAPI.getGameweekFixturesData(gameweek);
+export async function GetMultiplePicksData(picks, gameweek, footballPlayers, teams, isDraft, api) {
+    let liveStats = await api.getGameweekFootballersData(gameweek);
+    let fixtures = await api.getGameweekFixturesData(gameweek);
 
     let unfinishedFixtures = fixtures.filter(m => m.finished_provisional === false);
     let unfinishedFixturesLineUps = [];
     if (unfinishedFixtures.some(f => f)) {
         await Promise.all(unfinishedFixtures.map(async f => {
             let fixtureId = f.pulse_id;
-            let pulseFixturePlayerIds = await FantasyAPI.getFixturePlayers(fixtureId);
+            let pulseFixturePlayerIds = await api.getFixturePlayers(fixtureId);
             if (pulseFixturePlayerIds.some(l => l)) {
                 unfinishedFixturesLineUps.push({id:fixtureId, lineup:pulseFixturePlayerIds});
             }
@@ -23,18 +22,18 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         let name = pick.name;
         let playerId = pick.id;
         let cacheKey = `${gameweek}-${playerId}`;
-        let data = await CacheService.getIfExist(cacheKey, FantasyAPI.getPlayerPicksForEvent, playerId, gameweek);
+        let data = await CacheService.getIfExist(cacheKey, api.getPlayerPicksForEvent, playerId, gameweek);
 
         let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
-        let transferCosts = data.entry_history.event_transfers_cost;
+        let transferCosts = data.entry_history.event_transfers_cost ?? 0;
         let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
         let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
         let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
-        let currentMatchesBonus = getCurrentMatchesBonus(fixtures);
+        let currentMatchesBonus = getCurrentMatchesBonus(fixtures, isDraft);
 
         let playersToRender = await Promise.all(data.picks.map(pick => {
             let actualPlayer = footballPlayers.find(pl => pl.id === pick.element);
-            let actualStat = liveStats.find(pl => pl.id === pick.element);
+            let actualStat = isDraft ? liveStats[pick.element] : liveStats.find(pl => pl.id === pick.element);
             
             let decoratedPick = {
                 id: pick.element, 
@@ -86,7 +85,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
     
         const captain = playersToRender.find(pl => pl.isCaptain);
         const multiplier = isTripleCaptainActive ? 3 : 2;
-        playersToRender.map(pl => pl.points = getPickPoints(pl, captain.canPlay, multiplier));
+        playersToRender.map(pl => pl.points = getPickPoints(pl, captain?.canPlay, multiplier));
     
         const totalPoints = getTotalPoints(playersToRender) - transferCosts;
     
@@ -106,12 +105,12 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
     return result;
 }
 
-function getCurrentMatchesBonus(fixtures) {
+function getCurrentMatchesBonus(fixtures, isDraft) {
     let matchesWithoutBonus = fixtures.filter(fi => fi.started && 
-        fi.stats.find(st => st.identifier === 'bonus').h.length === 0 && 
-        fi.stats.find(st => st.identifier === 'bonus').a.length === 0);
+        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').h.length === 0 && 
+        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').a.length === 0);
     let bonuses = matchesWithoutBonus.map(fi => {
-        let allBonuses = [...fi.stats.find(st => st.identifier === 'bps').h, ...fi.stats.find(st => st.identifier === 'bps').a];
+        let allBonuses = [...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').h, ...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').a];
         if (!allBonuses || allBonuses.length === 0) {
             return [];
         }
