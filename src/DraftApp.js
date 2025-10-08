@@ -106,6 +106,12 @@ class DraftApp extends Component {
             m.id = `${m.league_entry_1}-${m.league_entry_2}`;
         });
 
+        league.standings.forEach(s => {
+            let entry = league.league_entries.find(e => e.id === s.league_entry);
+            s.entry = entry.entry_id;
+            s.entry_name = entry.entry_name;
+        });
+
         let currentId = league.league_entries.find(e => e.entry_id === this.state.playerId).id;
         this.setState({rankings: league.standings, entryId: currentId});
 
