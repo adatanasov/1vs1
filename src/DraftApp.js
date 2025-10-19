@@ -130,7 +130,7 @@ class DraftApp extends Component {
 
             if (inProgress && this.state.currentGameweek === gameweek) {
                 let players = currentMatches.map(m => {
-                    return [m.league_entry_1, m.league_entry_2];
+                    return [m.entry_1_entry, m.entry_2_entry];
                 }).flat().map(id => {
                     return {id: id, name: id};
                 });
