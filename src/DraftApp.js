@@ -181,7 +181,7 @@ class DraftApp extends Component {
     }
 
     refreshAll() {
-        this.handleLeagueChange(this.state.selectedLeague, this.state.gameweek);
+        this.handleLeagueChange(this.state.selectedLeague, this.state.allMatches, this.state.gameweek);
     }
 
     showLoader() {
@@ -212,7 +212,7 @@ class DraftApp extends Component {
                 {this.state.playerId && this.state.leagues && 
                     <LeagueSelect 
                         leagues={this.state.leagues} 
-                        onChange={(d) => this.handleLeagueChange(d, this.state.gameweek)} />}
+                        onChange={(d) => this.handleLeagueChange(d, this.state.allMatches, this.state.gameweek)} />}
                 {this.state.gameweek && this.state.rankings &&
                     <GameWeekSelect 
                         currentEvent={this.state.currentGameweek} 
