@@ -18,9 +18,9 @@ class DraftApp extends Component {
         let playerId = parseInt(queryParams.get('id'));
 
         if (playerId) {
-            localStorage.setItem("PlayerId", playerId);
+            localStorage.setItem("PlayerIdDraft", playerId);
         } else {
-            playerId = localStorage.getItem("PlayerId");  
+            playerId = localStorage.getItem("PlayerIdDraft");  
             if (playerId) {
                 queryParams.set('id', playerId); 
                 window.location.search = queryParams.toString();
@@ -52,7 +52,7 @@ class DraftApp extends Component {
         if (this.state.playerId) {
             this.showLoader();
 
-            localStorage.setItem("PlayerId", this.state.playerId);
+            localStorage.setItem("PlayerIdDraft", this.state.playerId);
 
             let data = await DraftAPI.getPlayersAndTeams();
             this.setState(data);
@@ -203,7 +203,7 @@ class DraftApp extends Component {
                     secondaryColor="#37003C"
                     wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">draft v.1.1.1</div>}
+                    <div className="version">draft v.1.1.2</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
