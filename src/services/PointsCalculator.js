@@ -107,10 +107,10 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
 
 function getCurrentMatchesBonus(fixtures, isDraft) {
     let matchesWithoutBonus = fixtures.filter(fi => fi.started && 
-        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').h.length === 0 && 
-        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').a.length === 0);
+        fi.stats.find(st => isDraft ? st.s === 'bonus' : st.identifier === 'bonus').h.length === 0 && 
+        fi.stats.find(st => isDraft ? st.s === 'bonus' : st.identifier === 'bonus').a.length === 0);
     let bonuses = matchesWithoutBonus.map(fi => {
-        let allBonuses = [...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').h, ...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').a];
+        let allBonuses = [...fi.stats.find(st => isDraft ? st.s === 'bps' : st.identifier === 'bps').h, ...fi.stats.find(st => isDraft ? st.s === 'bps' : st.identifier === 'bps').a];
         if (!allBonuses || allBonuses.length === 0) {
             return [];
         }
