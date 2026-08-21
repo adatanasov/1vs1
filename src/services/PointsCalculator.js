@@ -25,7 +25,7 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
         let data = await CacheService.getIfExist(cacheKey, api.getPlayerPicksForEvent, playerId, gameweek);
 
         let playingTeams = fixtures.map(f => f.team_h).concat(fixtures.map(f => f.team_a));
-        let transferCosts = data.entry_history.event_transfers_cost ?? 0;
+        let transferCosts = data.entry_history?.event_transfers_cost ?? 0;
         let isBenchBoostActive = data.active_chip && data.active_chip === 'bboost';
         let isTripleCaptainActive = data.active_chip && data.active_chip === '3xc';
         let isThereAutomaticSubs = data.automatic_subs && data.automatic_subs.length > 0;
@@ -107,10 +107,10 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
 
 function getCurrentMatchesBonus(fixtures, isDraft) {
     let matchesWithoutBonus = fixtures.filter(fi => fi.started && 
-        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').h.length === 0 && 
-        fi.stats.find(st => isDraft ? st.s : st.identifier === 'bonus').a.length === 0);
+        fi.stats.find(st => isDraft ? st.s === 'bonus' : st.identifier === 'bonus').h.length === 0 && 
+        fi.stats.find(st => isDraft ? st.s === 'bonus' : st.identifier === 'bonus').a.length === 0);
     let bonuses = matchesWithoutBonus.map(fi => {
-        let allBonuses = [...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').h, ...fi.stats.find(st => isDraft ? st.s : st.identifier === 'bps').a];
+        let allBonuses = [...fi.stats.find(st => isDraft ? st.s === 'bps' : st.identifier === 'bps').h, ...fi.stats.find(st => isDraft ? st.s === 'bps' : st.identifier === 'bps').a];
         if (!allBonuses || allBonuses.length === 0) {
             return [];
         }

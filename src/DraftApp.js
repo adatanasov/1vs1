@@ -18,9 +18,9 @@ class DraftApp extends Component {
         let playerId = parseInt(queryParams.get('id'));
 
         if (playerId) {
-            localStorage.setItem("PlayerId", playerId);
+            localStorage.setItem("PlayerIdDraft", playerId);
         } else {
-            playerId = localStorage.getItem("PlayerId");  
+            playerId = localStorage.getItem("PlayerIdDraft");  
             if (playerId) {
                 queryParams.set('id', playerId); 
                 window.location.search = queryParams.toString();
@@ -52,7 +52,7 @@ class DraftApp extends Component {
         if (this.state.playerId) {
             this.showLoader();
 
-            localStorage.setItem("PlayerId", this.state.playerId);
+            localStorage.setItem("PlayerIdDraft", this.state.playerId);
 
             let data = await DraftAPI.getPlayersAndTeams();
             this.setState(data);
@@ -130,7 +130,7 @@ class DraftApp extends Component {
 
             if (inProgress && this.state.currentGameweek === gameweek) {
                 let players = currentMatches.map(m => {
-                    return [m.league_entry_1, m.league_entry_2];
+                    return [m.entry_1_entry, m.entry_2_entry];
                 }).flat().map(id => {
                     return {id: id, name: id};
                 });
@@ -181,7 +181,7 @@ class DraftApp extends Component {
     }
 
     refreshAll() {
-        this.handleLeagueChange(this.state.selectedLeague, this.state.gameweek);
+        this.handleLeagueChange(this.state.selectedLeague, this.state.allMatches, this.state.gameweek);
     }
 
     showLoader() {
@@ -203,7 +203,7 @@ class DraftApp extends Component {
                     secondaryColor="#37003C"
                     wrapperClass="loader" />
                 {!this.state.selectedLeague &&
-                    <div className="version">draft v.1.1.0</div>}
+                    <div className="version">draft v.1.1.3</div>}
                 {!this.state.playerId && <EntryForm />}
                 {this.state.playerId && this.state.playerName && 
                     <PlayerName 
@@ -212,7 +212,7 @@ class DraftApp extends Component {
                 {this.state.playerId && this.state.leagues && 
                     <LeagueSelect 
                         leagues={this.state.leagues} 
-                        onChange={(d) => this.handleLeagueChange(d, this.state.gameweek)} />}
+                        onChange={(d) => this.handleLeagueChange(d, this.state.allMatches, this.state.gameweek)} />}
                 {this.state.gameweek && this.state.rankings &&
                     <GameWeekSelect 
                         currentEvent={this.state.currentGameweek} 
