@@ -4,17 +4,17 @@ export async function GetMultiplePicksData(picks, gameweek, footballPlayers, tea
     let liveStats = await api.getGameweekFootballersData(gameweek);
     let fixtures = await api.getGameweekFixturesData(gameweek);
 
-    let unfinishedFixtures = fixtures.filter(m => m.finished_provisional === false);
+    // let unfinishedFixtures = fixtures.filter(m => m.finished_provisional === false);
     let unfinishedFixturesLineUps = [];
-    if (unfinishedFixtures.some(f => f)) {
-        await Promise.all(unfinishedFixtures.map(async f => {
-            let fixtureId = f.pulse_id;
-            let pulseFixturePlayerIds = await api.getFixturePlayers(fixtureId);
-            if (pulseFixturePlayerIds.some(l => l)) {
-                unfinishedFixturesLineUps.push({id:fixtureId, lineup:pulseFixturePlayerIds});
-            }
-        }));        
-    }
+    // if (unfinishedFixtures.some(f => f)) {
+    //     await Promise.all(unfinishedFixtures.map(async f => {
+    //         let fixtureId = f.pulse_id;
+    //         let pulseFixturePlayerIds = await api.getFixturePlayers(fixtureId);
+    //         if (pulseFixturePlayerIds.some(l => l)) {
+    //             unfinishedFixturesLineUps.push({id:fixtureId, lineup:pulseFixturePlayerIds});
+    //         }
+    //     }));        
+    // }
 
     let result = [];
 
